@@ -20,7 +20,7 @@ class Requirement
             }
 
             if (! class_exists('Module')) {
-                $output .= "<fg=red;options=bold>Larave Modules not found!</> \n";
+                $output .= "<fg=red;options=bold>Laravel Modules not found!</> \n";
                 $output .= "<fg=green;options=bold>Install The Laravel Modules Package - composer require nwidart/laravel-modules</> \n\n";
             }
         }
