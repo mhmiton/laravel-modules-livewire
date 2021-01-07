@@ -1,0 +1,40 @@
+{
+    "name": "mhmiton/laravel-modules-livewire",
+    "description": "Using Laravel Livewire in Laravel Modules package with automatically registered livewire components for every modules.",
+    "keywords": [
+        "laravel",
+        "modules",
+        "module",
+        "livewire",
+        "nwidart",
+        "mhmiton"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mehediul Hassan Miton",
+            "email": "mhmiton.dev@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "type": "library",
+    "require": {
+        "php": ">=7.3"
+    },
+    "require-dev": {
+        "laravel/framework": "^7.0|^8.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mhmiton\\LaravelModulesLivewire\\LaravelModulesLivewireServiceProvider"
+            ]
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Mhmiton\\LaravelModulesLivewire\\": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}

@@ -1,0 +1,93 @@
+# Laravel Modules With Livewire
+
+Using [Laravel Livewire](https://github.com/livewire/livewire) in [Laravel Modules](https://github.com/nWidart/laravel-modules) package with automatically registered livewire components for every modules.
+
+<p align="center">
+    <img src="http://mhmiton.com/laravel-modules-livewire.png" alt="laravel-modules-livewire">
+</p>
+
+### Installation:
+
+Install through Composer:
+
+```
+composer require mhmiton/laravel-modules-livewire
+```
+
+Publish the package's configuration file:
+
+```
+php artisan vendor:publish --provider="Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider"
+```
+
+### Making Components:
+
+**Command Signature:**
+
+`php artisan module:make-livewire <Module> <Component> --view= --force --inline`
+
+**Example:**
+
+```
+php artisan module:make-livewire Core Pages/AboutPage
+
+php artisan module:make-livewire Core Pages\\AboutPage
+
+php artisan module:make-livewire Core pages.about-page
+```
+
+**Force create component if the class already exists:**
+
+`php artisan module:make-livewire Core Pages/AboutPage --force`
+
+**Component Files:**
+
+```
+Class: Modules/Core/Http/Livewire/Pages/AboutPage.php
+View: Modules/Core/Resources/views/livewire/pages/about-page.blade.php
+```
+
+**Inline Component:**
+
+`php artisan module:make-livewire Core Pages/AboutPage --inline`
+
+**Component File:**
+
+`Class: Modules/Core/Http/Livewire/Pages/AboutPage.php`
+
+
+**Extra Option (--view):**
+
+**You able to set custom view path for Component with (--view) option.**
+
+**Example -**
+
+```
+php artisan module:make-livewire Core Pages/AboutPage --view=pages/about
+
+or
+
+php artisan module:make-livewire Core Pages/AboutPage --view=pages.about
+```
+
+**Component Files:**
+
+```
+Class: Modules/Core/Http/Livewire/Pages/AboutPage.php
+View: Modules/Core/Resources/views/livewire/pages/about.blade.php
+```
+
+
+### Rendering Components:
+
+`<livewire:{moudle-lower-name}::component-class-kebab-case />`
+
+**Example -**
+
+`<livewire:core::pages.about-page />`
+
+### License
+
+Copyright (c) 2021 Mehediul Hassan Miton <mhmiton.dev@gmail.com>
+
+The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
