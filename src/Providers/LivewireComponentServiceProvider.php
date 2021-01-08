@@ -55,9 +55,11 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
                 $componentClassStr = '\\' . config('modules.namespace') . '\\' . $module->getName() . '\\' . $defaultNamespace . '\\' . $componentClassPath;
 
-                $componentClass = get_class(new $componentClassStr);
+                if (class_exists($componentClassStr)) {
+                    $componentClass = get_class(new $componentClassStr);
 
-                $loadComponent = \Livewire::component($componentName, $componentClass);
+                    $loadComponent = \Livewire::component($componentName, $componentClass);
+                }
             });
         });
     }
