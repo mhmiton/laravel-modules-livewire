@@ -38,14 +38,16 @@ class LivewireComponentServiceProvider extends ServiceProvider
         $filesystem = new Filesystem();
 
         $modules->map(function ($module) use ($filesystem, $defaultNamespace) {
-            $modulePath = $module->getPath();
+            $modulePath = strtr($module->getPath(), ['\\' => '/']);
 
             $path = $modulePath. '/'. strtr($defaultNamespace, ['\\' => '/']);
 
             $files = collect( $filesystem->isDirectory($path) ? $filesystem->allFiles($path) : [] );
 
             $files->map(function ($file) use ($module, $path, $defaultNamespace) {
-                $componentPath = \Str::after($file->getPathname(), $path.'/');
+                $filePath = strtr($file->getPathname(), ['\\' => '/']);
+
+                $componentPath = \Str::after($filePath, $path.'/');
 
                 $componentClassPath = strtr( $componentPath , ['/' => '\\', '.php' => '']);
         
