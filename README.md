@@ -80,7 +80,7 @@ View: Modules/Core/Resources/views/livewire/pages/about.blade.php
 
 ### Rendering Components:
 
-`<livewire:{moudle-lower-name}::component-class-kebab-case />`
+`<livewire:{module-lower-name}::component-class-kebab-case />`
 
 **Example -**
 
