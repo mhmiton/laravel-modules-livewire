@@ -62,7 +62,7 @@ class Decomposer
         
         $output = '';
 
-        if (! self::hasPackages($packages)) {
+        if (! self::hasPackages($packages) || ! class_exists('Livewire') || ! class_exists('Module')) {
             $type = 'error';
 
             $output .= "\n<options=bold,reverse;fg=red> WHOOPS! </> 😳 \n\n";
