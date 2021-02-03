@@ -2,8 +2,14 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Providers;
 
+use ReflectionClass;
+use Symfony\Component\Finder\SplFileInfo;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\Livewire;
+use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 
 class LivewireComponentServiceProvider extends ServiceProvider
 {
@@ -14,7 +20,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->loadComponents();
+        $this->registerComponents();
     }
 
     /**
@@ -27,53 +33,49 @@ class LivewireComponentServiceProvider extends ServiceProvider
         return [];
     }
 
-    protected function loadComponents()
+    protected function registerComponents()
     {
-        if (! class_exists('Livewire') || ! class_exists('Module')) return false;
+        if (Decomposer::checkDependencies()->type == 'error') return false;
 
         $modules = \Module::toCollection();
 
-        $defaultNamespace = config('modules-livewire.namespace', 'Http\\Livewire');
+        $modulesLivewireNamespace = config('modules-livewire.namespace', 'Http\\Livewire');
 
-        $filesystem = new Filesystem();
+        $modules->each(function ($module) use ($modulesLivewireNamespace) {
+            $directory = (string) Str::of($module->getPath())
+                ->append('/' . $modulesLivewireNamespace)
+                ->replace(['\\'], '/');
 
-        $modules->map(function ($module) use ($filesystem, $defaultNamespace) {
-            $modulePath = strtr($module->getPath(), ['\\' => '/']);
+            $namespace = config('modules.namespace', 'Modules') . '\\' . $module->getName() . '\\' . $modulesLivewireNamespace;
 
-            $path = $modulePath. '/'. strtr($defaultNamespace, ['\\' => '/']);
-
-            $files = collect( $filesystem->isDirectory($path) ? $filesystem->allFiles($path) : [] );
-
-            $files->map(function ($file) use ($module, $path, $defaultNamespace) {
-                $filePath = strtr($file->getPathname(), ['\\' => '/']);
-
-                $componentPath = \Str::after($filePath, $path.'/');
-
-                $componentClassPath = strtr( $componentPath , ['/' => '\\', '.php' => '']);
-        
-                $componentName = $this->getComponentName($componentClassPath, $module);
-
-                $componentClassStr = '\\' . config('modules.namespace') . '\\' . $module->getName() . '\\' . $defaultNamespace . '\\' . $componentClassPath;
-
-                if (class_exists($componentClassStr)) {
-                    $componentClass = get_class(new $componentClassStr);
-
-                    $loadComponent = \Livewire::component($componentName, $componentClass);
-                }
-            });
+            $this->registerComponentDirectory($directory, $namespace, $module->getLowerName() . '::');
         });
     }
 
-    protected function getComponentName($componentClassPath, $module = null)
+    protected function registerComponentDirectory($directory, $namespace, $aliasPrefix = '')
     {
-        $dirs = explode('\\', $componentClassPath);
+        $filesystem = new Filesystem();
 
-        $componentName = collect($dirs)
-            ->map([\Str::class, 'kebab'])
-            ->implode('.');
+        if (! $filesystem->isDirectory($directory)) return false;
 
-        $moduleNamePrefix = ($module) ? $module->getLowerName().'::' : null;
+        collect($filesystem->allFiles($directory))
+            ->map(function (SplFileInfo $file) use ($namespace) {
+                return (string) Str::of($namespace)
+                    ->append('\\', $file->getRelativePathname())
+                    ->replace(['/', '.php'], ['\\', '']);
+            })
+            ->filter(function ($class) {
+                return is_subclass_of($class, Component::class) && ! (new ReflectionClass($class))->isAbstract();
+            })
+            ->each(function ($class) use ($namespace, $aliasPrefix) {
+                $alias = $aliasPrefix . Str::of($class)
+                    ->after($namespace . '\\')
+                    ->replace(['/', '\\'], '.')
+                    ->explode('.')
+                    ->map([Str::class, 'kebab'])
+                    ->implode('.');
 
-       return $moduleNamePrefix . $componentName;
+                Livewire::component($alias, $class);
+            });
     }
 }

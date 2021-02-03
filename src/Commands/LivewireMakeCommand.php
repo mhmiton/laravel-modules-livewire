@@ -2,11 +2,12 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Commands;
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Mhmiton\LaravelModulesLivewire\Support\Stub;
-use Mhmiton\LaravelModulesLivewire\Support\Requirement;
+use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 use Mhmiton\LaravelModulesLivewire\Traits\ModuleCommandTrait;
 
 class LivewireMakeCommand extends Command
@@ -19,7 +20,7 @@ class LivewireMakeCommand extends Command
 
     public $directories;
 
-    protected $signature = 'module:make-livewire {module} {name} {--view=} {--force} {--inline}';
+    protected $signature = 'module:make-livewire {module} {component} {--view=} {--force} {--inline}';
 
     /**
      * The console command description.
@@ -35,11 +36,11 @@ class LivewireMakeCommand extends Command
      */
     public function handle()
     {
-        $checkDependencies = (new Requirement)->checkDependencies();
+        $checkDependencies = Decomposer::checkDependencies();
 
         if ($checkDependencies->type == 'error') {
             $this->line($checkDependencies->message);
-            return 0;        
+            return 0;
         }
 
         $this->component = $this->getComponent();
@@ -70,14 +71,14 @@ class LivewireMakeCommand extends Command
 
     protected function getComponent()
     {
-        $module = $this->laravel['modules']->findOrFail($this->getModuleName());
+        $module = $this->laravel['modules']->findOrFail($this->argument('module'));
         
         $this->module = $module;
         
-        $this->directories = preg_split('/[.\/(\\\\)]+/', $this->argument('name'));
-        
+        $this->directories = preg_split('/[.\/(\\\\)]+/', $this->argument('component'));
+
         $classInfo = $this->getClassInfo();
-        
+
         $viewInfo = $this->getViewInfo();
 
         return (object) [
@@ -88,28 +89,31 @@ class LivewireMakeCommand extends Command
 
     public function getClassInfo()
     {
-        $modulePath = $this->module->getPath().'/';
+        $modulesLivewireNamespace = config('modules-livewire.namespace', 'Http\\Livewire');
 
-        $defaultNamespace = config('modules-livewire.namespace', 'Http\\Livewire');
+        $classDir = (string) Str::of($this->module->getPath())
+                ->append('/' . $modulesLivewireNamespace)
+                ->replace(['\\'], '/');
 
-        $classDir = $modulePath . strtr($defaultNamespace, ['\\' => '/']);
-
-        $path = collect($this->directories)
-            ->map([\Str::class, 'studly'])
+        $classPath = collect($this->directories)
+            ->map([Str::class, 'studly'])
             ->implode('/');
 
-        $beforeLast = (\Str::contains($path, '/')) ? '/' . \Str::beforeLast($path, '/') : '';
+        $namespaceAppend = Str::contains($classPath, '/') ? '/' . $classPath : '';
 
-        $namespace = config('modules.namespace') . '\\' . $this->module->getName() . '\\' . $defaultNamespace . strtr($beforeLast, ['/' => '\\']);
+        $namespace = (string) Str::of($namespaceAppend)
+            ->beforeLast('/')
+            ->prepend( config('modules.namespace', 'Modules') . '\\' . $this->module->getName() . '\\' . $modulesLivewireNamespace )
+            ->replace(['/'], ['\\']);
 
-        $name = \Str::studly( \Arr::last($this->directories) );
+        $className = Str::studly(Arr::last($this->directories));
 
         return (object) [
             'dir' => $classDir,
-            'path' => $path,
-            'file' => $classDir . '/' . $path . '.php',
+            'path' => $classPath,
+            'file' => $classDir . '/' . $classPath . '.php',
             'namespace' => $namespace,
-            'name' => $name,
+            'name' => $className,
         ];
     }
 
@@ -120,37 +124,35 @@ class LivewireMakeCommand extends Command
         $viewDir = $modulePath . config('modules-livewire.view', 'Resources/views/livewire');
 
         $path = collect($this->directories)
-            ->map([\Str::class, 'kebab'])
+            ->map([Str::class, 'kebab'])
             ->implode('/');
 
         if ($this->option('view')) $path = strtr($this->option('view'), ['.' => '/']);
         
-        $name = strtr($path, ['/' => '.']);
-
         return (object) [
             'dir' => $viewDir,
             'path' => $path,
-            'folder' => \Str::after($viewDir, 'views/'),
+            'folder' => Str::after($viewDir, 'views/'),
             'file' => $viewDir . '/' . $path . '.blade.php',
-            'name' => $name,
+            'name' => strtr($path, ['/' => '.']),
         ];
     }
 
     protected function createClass($force = false, $inline = false)
     {
-        $classPath = $this->component->class->file;
+        $classFile = $this->component->class->file;
 
-        if (File::exists($classPath) && ! $force) {
+        if (File::exists($classFile) && ! $force) {
             $this->line("<options=bold,reverse;fg=red> WHOOPS </> 😳 \n");
             $this->line("<fg=red;options=bold>Class already exists:</> {$this->component->class->path}");
             return false;
         }
 
-        $this->ensureDirectoryExists($classPath);
+        $this->ensureDirectoryExists($classFile);
 
-        File::put($classPath, $this->classContents($inline));
+        File::put($classFile, $this->classContents($inline));
 
-        return $classPath;
+        return $classFile;
     }
 
     public function classContents($inline = false)
@@ -169,18 +171,18 @@ class LivewireMakeCommand extends Command
     {
         if ($inline) return false;
 
-        $viewPath = $this->component->view->file;
+        $viewFile = $this->component->view->file;
 
-        if (File::exists($viewPath) && ! $force) {
+        if (File::exists($viewFile) && ! $force) {
             $this->line("<fg=red;options=bold>View already exists:</> {$this->component->view->path}");
             return false;
         }
 
-        $this->ensureDirectoryExists($viewPath);
+        $this->ensureDirectoryExists($viewFile);
 
-        File::put($viewPath, $this->viewContents());
+        File::put($viewFile, $this->viewContents());
 
-        return $viewPath;
+        return $viewFile;
     }
 
     public function viewContents($inline = false)
