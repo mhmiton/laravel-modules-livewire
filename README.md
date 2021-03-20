@@ -66,7 +66,7 @@ View: Modules/Core/Resources/views/livewire/pages/about-page.blade.php
 
 **Extra Option (--view):**
 
-**You able to set custom view path for Component with (--view) option.**
+**You're able to set a custom view path for Component with (--view) option.**
 
 **Example -**
 
