@@ -20,7 +20,7 @@ class LivewireMakeCommand extends Command
 
     public $directories;
 
-    protected $signature = 'module:make-livewire {module} {component} {--view=} {--force} {--inline}';
+    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline}';
 
     /**
      * The console command description.
