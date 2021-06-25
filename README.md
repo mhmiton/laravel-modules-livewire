@@ -32,21 +32,21 @@ php artisan vendor:publish --provider="Mhmiton\LaravelModulesLivewire\LaravelMod
 
 **Command Signature:**
 
-`php artisan module:make-livewire <Module> <Component> --view= --force --inline`
+`php artisan module:make-livewire <Component> <Module> --view= --force --inline`
 
 **Example:**
 
 ```
-php artisan module:make-livewire Core Pages/AboutPage
+php artisan module:make-livewire Pages/AboutPage Core
 
-php artisan module:make-livewire Core Pages\\AboutPage
+php artisan module:make-livewire Pages\\AboutPage Core
 
-php artisan module:make-livewire Core pages.about-page
+php artisan module:make-livewire pages.about-page Core
 ```
 
 **Force create component if the class already exists:**
 
-`php artisan module:make-livewire Core Pages/AboutPage --force`
+`php artisan module:make-livewire Pages/AboutPage Core --force`
 
 **Component Files:**
 
@@ -71,11 +71,11 @@ View: Modules/Core/Resources/views/livewire/pages/about-page.blade.php
 **Example -**
 
 ```
-php artisan module:make-livewire Core Pages/AboutPage --view=pages/about
+php artisan module:make-livewire Pages/AboutPage Core --view=pages/about
 
 or
 
-php artisan module:make-livewire Core Pages/AboutPage --view=pages.about
+php artisan module:make-livewire Pages/AboutPage Core --view=pages.about
 ```
 
 **Component Files:**
