@@ -2,14 +2,15 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Providers;
 
-use ReflectionClass;
-use Symfony\Component\Finder\SplFileInfo;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\Livewire;
 use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
+use Nwidart\Modules\Facades\Module;
+use ReflectionClass;
+use Symfony\Component\Finder\SplFileInfo;
 
 class LivewireComponentServiceProvider extends ServiceProvider
 {
@@ -20,7 +21,9 @@ class LivewireComponentServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->registerComponents();
+        $this->registerModuleComponents();
+
+        $this->registerCustomModuleComponents();
     }
 
     /**
@@ -33,11 +36,13 @@ class LivewireComponentServiceProvider extends ServiceProvider
         return [];
     }
 
-    protected function registerComponents()
+    protected function registerModuleComponents()
     {
-        if (Decomposer::checkDependencies()->type == 'error') return false;
+        if (Decomposer::checkDependencies()->type == 'error') {
+            return false;
+        }
 
-        $modules = \Module::toCollection();
+        $modules = Module::toCollection();
 
         $modulesLivewireNamespace = config('modules-livewire.namespace', 'Http\\Livewire');
 
@@ -52,11 +57,36 @@ class LivewireComponentServiceProvider extends ServiceProvider
         });
     }
 
+    protected function registerCustomModuleComponents()
+    {
+        if (Decomposer::checkDependencies(['livewire/livewire'])->type == 'error') {
+            return false;
+        }
+
+        $modules = collect(config('modules-livewire.custom_modules', []));
+
+        $modules->each(function ($module, $moduleName) {
+            $moduleLivewireNamespace = $module['namespace'] ?? config('modules-livewire.namespace', 'Http\\Livewire');
+
+            $directory = (string) Str::of($module['path'] ?? '')
+                ->append('/' . $moduleLivewireNamespace)
+                ->replace(['\\'], '/');
+
+            $namespace = ($module['module_namespace'] ?? $moduleName) . '\\' . $moduleLivewireNamespace;
+
+            $lowerName = $module['name_lower'] ?? strtolower($moduleName);
+
+            $this->registerComponentDirectory($directory, $namespace, $lowerName . '::');
+        });
+    }
+
     protected function registerComponentDirectory($directory, $namespace, $aliasPrefix = '')
     {
         $filesystem = new Filesystem();
 
-        if (! $filesystem->isDirectory($directory)) return false;
+        if (! $filesystem->isDirectory($directory)) {
+            return false;
+        }
 
         collect($filesystem->allFiles($directory))
             ->map(function (SplFileInfo $file) use ($namespace) {

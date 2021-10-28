@@ -15,7 +15,7 @@ class LaravelModulesLivewireServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        
+        //
     }
 
     /**
@@ -26,11 +26,14 @@ class LaravelModulesLivewireServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerProviders();
+
         $this->registerCommands();
+
         $this->registerPublishables();
 
         $this->mergeConfigFrom(
-            __DIR__.'/../config/modules-livewire.php', 'modules-livewire'
+            __DIR__.'/../config/modules-livewire.php',
+            'modules-livewire'
         );
     }
 
@@ -41,7 +44,9 @@ class LaravelModulesLivewireServiceProvider extends ServiceProvider
 
     protected function registerCommands()
     {
-        if (! $this->app->runningInConsole()) return;
+        if (! $this->app->runningInConsole()) {
+            return;
+        }
 
         $this->commands([
             LivewireMakeCommand::class, // module:make-livewire

@@ -1,16 +1,16 @@
 <?php
 
-namespace $NAMESPACE$;
+namespace [namespace];
 
 use Livewire\Component;
 
-class $CLASS$ extends Component
+class [class] extends Component
 {
     public function render()
     {
         return <<<'blade'
             <div>
-                {{-- inline component --}}
+                <h3>[quote]</h3>
             </div>
         blade;
     }

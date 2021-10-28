@@ -2,25 +2,15 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Commands;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
-use Mhmiton\LaravelModulesLivewire\Support\Stub;
-use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
-use Mhmiton\LaravelModulesLivewire\Traits\ModuleCommandTrait;
+use Mhmiton\LaravelModulesLivewire\Traits\ComponentParser;
 
 class LivewireMakeCommand extends Command
 {
-    use ModuleCommandTrait;
+    use ComponentParser;
 
-    public $component;
-
-    public $module;
-
-    public $directories;
-
-    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline}';
+    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--custom}';
 
     /**
      * The console command description.
@@ -36,169 +26,67 @@ class LivewireMakeCommand extends Command
      */
     public function handle()
     {
-        $checkDependencies = Decomposer::checkDependencies();
-
-        if ($checkDependencies->type == 'error') {
-            $this->line($checkDependencies->message);
-            return 0;
+        if (! $this->parser()) {
+            return false;
         }
 
-        $this->component = $this->getComponent();
-
-        if ($this->isReservedClassName($name = $this->component->class->name)) {
-            $this->line("\n<options=bold,reverse;fg=red> WHOOPS! </> 😳 \n");
-            $this->line("<fg=red;options=bold>Class is reserved:</> {$name} \n");
-            return 0;
+        if (! $this->checkReservedName()) {
+            return false;
         }
 
-        $force = $this->option('force');
-        $inline = $this->option('inline');
+        $class = $this->createClass();
 
-        $class = $this->createClass($force, $inline);
-        $view = $this->createView($force, $inline);
+        $view = $this->createView();
 
         if ($class || $view) {
-            $this->line("\n <options=bold,reverse;fg=green> COMPONENT CREATED </> 🤙\n");
-            $class && $this->line("<options=bold;fg=green>CLASS:</> {$this->component->class->path}");
+            $this->line("<options=bold,reverse;fg=green> COMPONENT CREATED </> 🤙\n");
 
-            if (! $inline) {
-                $view && $this->line("<options=bold;fg=green>VIEW:</>  {$this->component->view->path}");
-            }
+            $class && $this->line("<options=bold;fg=green>CLASS:</> {$this->getClassSourcePath()}");
+
+            $view && $this->line("<options=bold;fg=green>VIEW:</>  {$this->getViewSourcePath()}");
+
+            $class && $this->line("<options=bold;fg=green>TAG:</> {$class->tag}");
         }
 
-        return 0;
+        return false;
     }
 
-    protected function getComponent()
-    {
-        $module = $this->laravel['modules']->findOrFail($this->argument('module'));
-        
-        $this->module = $module;
-        
-        $this->directories = preg_split('/[.\/(\\\\)]+/', $this->argument('component'));
-
-        $classInfo = $this->getClassInfo();
-
-        $viewInfo = $this->getViewInfo();
-
-        return (object) [
-            'class' => $classInfo,
-            'view' => $viewInfo
-        ];
-    }
-
-    public function getClassInfo()
-    {
-        $modulesLivewireNamespace = config('modules-livewire.namespace', 'Http\\Livewire');
-
-        $classDir = (string) Str::of($this->module->getPath())
-                ->append('/' . $modulesLivewireNamespace)
-                ->replace(['\\'], '/');
-
-        $classPath = collect($this->directories)
-            ->map([Str::class, 'studly'])
-            ->implode('/');
-
-        $namespaceAppend = Str::contains($classPath, '/') ? '/' . $classPath : '';
-
-        $namespace = (string) Str::of($namespaceAppend)
-            ->beforeLast('/')
-            ->prepend( config('modules.namespace', 'Modules') . '\\' . $this->module->getName() . '\\' . $modulesLivewireNamespace )
-            ->replace(['/'], ['\\']);
-
-        $className = Str::studly(Arr::last($this->directories));
-
-        return (object) [
-            'dir' => $classDir,
-            'path' => $classPath,
-            'file' => $classDir . '/' . $classPath . '.php',
-            'namespace' => $namespace,
-            'name' => $className,
-        ];
-    }
-
-    public function getViewInfo()
-    {
-        $modulePath = $this->module->getPath().'/';
-
-        $viewDir = $modulePath . config('modules-livewire.view', 'Resources/views/livewire');
-
-        $path = collect($this->directories)
-            ->map([Str::class, 'kebab'])
-            ->implode('/');
-
-        if ($this->option('view')) $path = strtr($this->option('view'), ['.' => '/']);
-        
-        return (object) [
-            'dir' => $viewDir,
-            'path' => $path,
-            'folder' => Str::after($viewDir, 'views/'),
-            'file' => $viewDir . '/' . $path . '.blade.php',
-            'name' => strtr($path, ['/' => '.']),
-        ];
-    }
-
-    protected function createClass($force = false, $inline = false)
+    protected function createClass()
     {
         $classFile = $this->component->class->file;
 
-        if (File::exists($classFile) && ! $force) {
-            $this->line("<options=bold,reverse;fg=red> WHOOPS </> 😳 \n");
-            $this->line("<fg=red;options=bold>Class already exists:</> {$this->component->class->path}");
+        if (File::exists($classFile) && ! $this->isForce()) {
+            $this->line("<options=bold,reverse;fg=red> WHOOPS-IE-TOOTLES </> 😳 \n");
+            $this->line("<fg=red;options=bold>Class already exists:</> {$this->getClassSourcePath()}");
+
             return false;
         }
 
         $this->ensureDirectoryExists($classFile);
 
-        File::put($classFile, $this->classContents($inline));
+        File::put($classFile, $this->getClassContents());
 
-        return $classFile;
+        return $this->component->class;
     }
 
-    public function classContents($inline = false)
+    protected function createView()
     {
-        $stubName = $inline ? '/livewire.inline.stub' : '/livewire.stub';
-
-        return (new Stub($stubName, [
-            'NAMESPACE'  => $this->component->class->namespace,
-            'CLASS'      => $this->component->class->name,
-            'LOWER_NAME' => $this->module->getLowerName(),
-            'VIEW_NAME'  => $this->component->view->folder . '.' . $this->component->view->name,
-        ]))->render();
-    }
-
-    protected function createView($force = false, $inline = false)
-    {
-        if ($inline) return false;
+        if ($this->isInline()) {
+            return false;
+        }
 
         $viewFile = $this->component->view->file;
 
-        if (File::exists($viewFile) && ! $force) {
-            $this->line("<fg=red;options=bold>View already exists:</> {$this->component->view->path}");
+        if (File::exists($viewFile) && ! $this->isForce()) {
+            $this->line("<fg=red;options=bold>View already exists:</> {$this->getViewSourcePath()}");
+
             return false;
         }
 
         $this->ensureDirectoryExists($viewFile);
 
-        File::put($viewFile, $this->viewContents());
+        File::put($viewFile, $this->getViewContents());
 
-        return $viewFile;
-    }
-
-    public function viewContents($inline = false)
-    {
-        return (new Stub('/livewire.view.stub'))->render();
-    }
-
-    protected function ensureDirectoryExists($path)
-    {
-        if (! File::isDirectory(dirname($path))) {
-            File::makeDirectory(dirname($path), 0777, $recursive = true, $force = true);
-        }
-    }
-
-    public function isReservedClassName($name)
-    {
-        return array_search($name, ['Parent', 'Component', 'Interface']) !== false;
+        return $this->component->view;
     }
 }
