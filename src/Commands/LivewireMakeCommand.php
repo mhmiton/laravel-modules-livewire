@@ -10,7 +10,7 @@ class LivewireMakeCommand extends Command
 {
     use ComponentParser;
 
-    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--custom}';
+    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--stub=} {--custom}';
 
     /**
      * The console command description.
@@ -30,7 +30,11 @@ class LivewireMakeCommand extends Command
             return false;
         }
 
-        if (! $this->checkReservedName()) {
+        if (! $this->checkClassNameValid()) {
+            return false;
+        }
+
+        if (! $this->checkReservedClassName()) {
             return false;
         }
 

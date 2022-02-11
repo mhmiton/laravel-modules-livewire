@@ -2,6 +2,7 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Traits;
 
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 
@@ -48,9 +49,12 @@ trait ComponentParser
 
         $viewInfo = $this->getViewInfo();
 
+        $stubInfo = $this->getStubInfo();
+
         return (object) [
             'class' => $classInfo,
             'view' => $viewInfo,
+            'stub' => $stubInfo,
         ];
     }
 
@@ -70,9 +74,7 @@ trait ComponentParser
 
         $className = $this->directories->last();
 
-        $directoryAsView = $this->directories
-            ->map([Str::class, 'kebab'])
-            ->implode('.');
+        $componentTag = $this->getComponentTag();
 
         return (object) [
             'dir' => $classDir,
@@ -80,7 +82,7 @@ trait ComponentParser
             'file' => $classDir . '/' . $classPath . '.php',
             'namespace' => $namespace,
             'name' => $className,
-            'tag' => "<livewire:{$this->getModuleLowerName()}::{$directoryAsView} />",
+            'tag' => $componentTag,
         ];
     }
 
@@ -105,11 +107,42 @@ trait ComponentParser
         ];
     }
 
+    protected function getStubInfo()
+    {
+        $defaultStubDir = __DIR__ . '/../Commands/stubs/';
+
+        $stubDir = File::isDirectory($publishedStubDir = base_path('stubs/modules-livewire/'))
+            ? $publishedStubDir
+            : $defaultStubDir;
+
+        if ($this->option('stub')) {
+            $customStubDir = Str::of(base_path('stubs/'))
+                ->append($this->option('stub') . '/')
+                ->replace(['../', './'], '');
+
+            $stubDir = File::isDirectory($customStubDir) ? $customStubDir : $stubDir;
+        }
+
+        $classStubName = $this->isInline() ? 'livewire.inline.stub' : 'livewire.stub';
+
+        $classStub = File::exists($stubDir . $classStubName)
+            ? $stubDir . $classStubName
+            : $defaultStubDir . $classStubName;
+
+        $viewStub = File::exists($stubDir . 'livewire.view.stub')
+            ? $stubDir . 'livewire.view.stub'
+            : $defaultStubDir . 'livewire.view.stub';
+
+        return (object) [
+            'dir' => $stubDir,
+            'class' => $classStub,
+            'view' => $viewStub,
+        ];
+    }
+
     protected function getClassContents()
     {
-        $stubPath = __DIR__ . '/../Commands/stubs/' . ($this->isInline() ? 'livewire.inline.stub' : 'livewire.stub');
-
-        $template = file_get_contents($stubPath);
+        $template = file_get_contents($this->component->stub->class);
 
         if ($this->isInline()) {
             $template = preg_replace('/\[quote\]/', $this->getComponentQuote(), $template);
@@ -127,7 +160,7 @@ trait ComponentParser
         return preg_replace(
             '/\[quote\]/',
             $this->getComponentQuote(),
-            file_get_contents(__DIR__ . '/../Commands/stubs/livewire.view.stub'),
+            file_get_contents($this->component->stub->view),
         );
     }
 
@@ -156,9 +189,22 @@ trait ComponentParser
         return Str::after($this->component->view->file, $this->getBasePath() . '/');
     }
 
+    protected function getComponentTag()
+    {
+        $directoryAsView = $this->directories
+            ->map([Str::class, 'kebab'])
+            ->implode('.');
+
+        $tag = "<livewire:{$this->getModuleLowerName()}::{$directoryAsView} />";
+
+        $tagWithOutIndex = Str::replaceLast('.index', '', $tag);
+
+        return $tagWithOutIndex;
+    }
+
     protected function getComponentQuote()
     {
-        return "The <code>{$this->getClassName()}</code> livewire component is loaded from the " . ($this->isCustomModule() ? 'custom' : '') . " <code>{$this->getModuleName()}</code> module.";
+        return "The <code>{$this->getClassName()}</code> livewire component is loaded from the " . ($this->isCustomModule() ? 'custom ' : '') . "<code>{$this->getModuleName()}</code> module.";
     }
 
     protected function getBasePath($path = null)

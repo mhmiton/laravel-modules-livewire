@@ -105,6 +105,10 @@ class LivewireComponentServiceProvider extends ServiceProvider
                     ->map([Str::class, 'kebab'])
                     ->implode('.');
 
+                if (Str::endsWith($class, ['\Index', '\index'])) {
+                    Livewire::component(Str::beforeLast($alias, '.index'), $class);
+                }
+
                 Livewire::component($alias, $class);
             });
     }

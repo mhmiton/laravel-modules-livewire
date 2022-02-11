@@ -49,7 +49,7 @@ class LaravelModulesLivewireServiceProvider extends ServiceProvider
         }
 
         $this->commands([
-            LivewireMakeCommand::class, // module:make-livewire
+            LivewireMakeCommand::class,
         ]);
     }
 
@@ -57,6 +57,10 @@ class LaravelModulesLivewireServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../config/modules-livewire.php' => base_path('config/modules-livewire.php'),
-        ], ['config']);
+        ], ['modules-livewire-config']);
+
+        $this->publishes([
+            __DIR__.'/Commands/stubs/' => base_path('stubs/modules-livewire'),
+        ], ['modules-livewire-stub']);
     }
 }

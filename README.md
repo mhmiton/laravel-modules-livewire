@@ -25,13 +25,14 @@ composer require mhmiton/laravel-modules-livewire
 Publish the package's configuration file:
 
 ```
-php artisan vendor:publish --provider="Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider"
+php artisan vendor:publish --tag=modules-livewire-config
 ```
+
 ### Making Components:
 
 **Command Signature:**
 
-`php artisan module:make-livewire <Component> <Module> --view= --force --inline --custom`
+`php artisan module:make-livewire <Component> <Module> --view= --force --inline --stub= --custom`
 
 **Example:**
 
@@ -76,6 +77,36 @@ COMPONENT CREATED  🤙
 
 CLASS: Modules/Core/Http/Livewire/Pages/AboutPage.php
 TAG: <livewire:core::pages.about-page />
+```
+
+**Modifying Stubs:**
+
+Publish the package's stubs:
+
+```
+php artisan vendor:publish --tag=modules-livewire-stub
+```
+
+After publishing the stubs, will create these files. And when running the make command, will use these stub files by default.
+
+```
+stubs/modules-livewire/livewire.inline.stub
+stubs/modules-livewire/livewire.stub
+stubs/modules-livewire/livewire.view.stub
+```
+
+**You're able to set a custom stub directory for component with (--stub) option.**
+
+```
+php artisan module:make-livewire Core Pages/AboutPage --stub=about
+```
+
+```
+php artisan module:make-livewire Core Pages/AboutPage --stub=modules-livewire/core
+```
+
+```
+php artisan module:make-livewire Core Pages/AboutPage --stub=./
 ```
 
 **Extra Option (--view):**
@@ -149,6 +180,7 @@ Remove comment for these lines & add your custom modules.
 >
 > **name_lower:** By default using module name to lowercase. If you set a custom name, module components will be register by custom name.
 >
+
 ### License
 
 Copyright (c) 2021 Mehediul Hassan Miton <mhmiton.dev@gmail.com>

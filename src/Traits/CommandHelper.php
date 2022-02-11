@@ -40,7 +40,10 @@ trait CommandHelper
 
             if (! $module || ! File::isDirectory($path)) {
                 $this->line("<options=bold,reverse;fg=red> WHOOPS! </> 😳 \n");
-                $this->line("<fg=red;options=bold>The {$moduleName} module not found in this path - {$path}.</>");
+
+                $path && $this->line("<fg=red;options=bold>The custom {$moduleName} module not found in this path - {$path}.</>");
+
+                ! $path && $this->line("<fg=red;options=bold>The custom {$moduleName} module not found.</>");
 
                 return null;
             }
@@ -124,9 +127,21 @@ trait CommandHelper
         return $this->getModulePath() . '/' . $moduleLivewireViewDir;
     }
 
-    protected function checkReservedName()
+    protected function checkClassNameValid()
     {
-        if ($this->isReservedName($name = $this->component->class->name)) {
+        if (! $this->isClassNameValid($name = $this->component->class->name)) {
+            $this->line("<options=bold,reverse;fg=red> WHOOPS! </> 😳 \n");
+            $this->line("<fg=red;options=bold>Class is invalid:</> {$name}");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    protected function checkReservedClassName()
+    {
+        if ($this->isReservedClassName($name = $this->component->class->name)) {
             $this->line("<options=bold,reverse;fg=red> WHOOPS! </> 😳 \n");
             $this->line("<fg=red;options=bold>Class is reserved:</> {$name}");
 
@@ -136,85 +151,13 @@ trait CommandHelper
         return true;
     }
 
-    protected function isReservedName($name)
+    protected function isClassNameValid($name)
     {
-        return in_array(strtolower($name), $this->getReservedName());
+        return (new \Livewire\Commands\MakeCommand())->isClassNameValid($name);
     }
 
-    protected function getReservedName()
+    protected function isReservedClassName($name)
     {
-        return [
-            'parent',
-            'component',
-            'interface',
-            '__halt_compiler',
-            'abstract',
-            'and',
-            'array',
-            'as',
-            'break',
-            'callable',
-            'case',
-            'catch',
-            'class',
-            'clone',
-            'const',
-            'continue',
-            'declare',
-            'default',
-            'die',
-            'do',
-            'echo',
-            'else',
-            'elseif',
-            'empty',
-            'enddeclare',
-            'endfor',
-            'endforeach',
-            'endif',
-            'endswitch',
-            'endwhile',
-            'eval',
-            'exit',
-            'extends',
-            'final',
-            'finally',
-            'fn',
-            'for',
-            'foreach',
-            'function',
-            'global',
-            'goto',
-            'if',
-            'implements',
-            'include',
-            'include_once',
-            'instanceof',
-            'insteadof',
-            'interface',
-            'isset',
-            'list',
-            'namespace',
-            'new',
-            'or',
-            'print',
-            'private',
-            'protected',
-            'public',
-            'require',
-            'require_once',
-            'return',
-            'static',
-            'switch',
-            'throw',
-            'trait',
-            'try',
-            'unset',
-            'use',
-            'var',
-            'while',
-            'xor',
-            'yield',
-        ];
+        return (new \Livewire\Commands\MakeCommand())->isReservedClassName($name);
     }
 }
