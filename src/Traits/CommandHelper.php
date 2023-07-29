@@ -153,11 +153,11 @@ trait CommandHelper
 
     protected function isClassNameValid($name)
     {
-        return (new \Livewire\Commands\MakeCommand())->isClassNameValid($name);
+        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand())->isClassNameValid($name);
     }
 
     protected function isReservedClassName($name)
     {
-        return (new \Livewire\Commands\MakeCommand())->isReservedClassName($name);
+        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand())->isReservedClassName($name);
     }
 }

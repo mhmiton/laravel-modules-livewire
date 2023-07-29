@@ -44,7 +44,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
         $modules = Module::toCollection();
 
-        $modulesLivewireNamespace = config('modules-livewire.namespace', 'Http\\Livewire');
+        $modulesLivewireNamespace = config('modules-livewire.namespace', 'Livewire');
 
         $modules->each(function ($module) use ($modulesLivewireNamespace) {
             $directory = (string) Str::of($module->getPath())
@@ -66,7 +66,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
         $modules = collect(config('modules-livewire.custom_modules', []));
 
         $modules->each(function ($module, $moduleName) {
-            $moduleLivewireNamespace = $module['namespace'] ?? config('modules-livewire.namespace', 'Http\\Livewire');
+            $moduleLivewireNamespace = $module['namespace'] ?? config('modules-livewire.namespace', 'Livewire');
 
             $directory = (string) Str::of($module['path'] ?? '')
                 ->append('/' . $moduleLivewireNamespace)
