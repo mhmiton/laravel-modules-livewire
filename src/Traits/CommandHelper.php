@@ -104,11 +104,11 @@ trait CommandHelper
 
     protected function getNamespace($classPath)
     {
-        $classPath = Str::contains($classPath, '/') ? '/' . $classPath : '';
+        $classPath = Str::contains($classPath, '/') ? '/'.$classPath : '';
 
         $prefix = $this->isCustomModule()
-            ? $this->getModuleNamespace() . '\\' . $this->getModuleLivewireNamespace()
-            : $this->getModuleNamespace() . '\\' . $this->module->getName() . '\\' . $this->getModuleLivewireNamespace();
+            ? $this->getModuleNamespace().'\\'.$this->getModuleLivewireNamespace()
+            : $this->getModuleNamespace().'\\'.$this->module->getName().'\\'.$this->getModuleLivewireNamespace();
 
         return (string) Str::of($classPath)
             ->beforeLast('/')
@@ -124,7 +124,7 @@ trait CommandHelper
             $moduleLivewireViewDir = config("modules-livewire.custom_modules.{$this->module}.view", $moduleLivewireViewDir);
         }
 
-        return $this->getModulePath() . '/' . $moduleLivewireViewDir;
+        return $this->getModulePath().'/'.$moduleLivewireViewDir;
     }
 
     protected function checkClassNameValid()

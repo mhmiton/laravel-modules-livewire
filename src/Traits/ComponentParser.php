@@ -65,7 +65,7 @@ trait ComponentParser
         $moduleLivewireNamespace = $this->getModuleLivewireNamespace();
 
         $classDir = (string) Str::of($modulePath)
-            ->append('/' . $moduleLivewireNamespace)
+            ->append('/'.$moduleLivewireNamespace)
             ->replace(['\\'], '/');
 
         $classPath = $this->directories->implode('/');
@@ -79,7 +79,7 @@ trait ComponentParser
         return (object) [
             'dir' => $classDir,
             'path' => $classPath,
-            'file' => $classDir . '/' . $classPath . '.php',
+            'file' => $classDir.'/'.$classPath.'.php',
             'namespace' => $namespace,
             'name' => $className,
             'tag' => $componentTag,
@@ -102,14 +102,14 @@ trait ComponentParser
             'dir' => $moduleLivewireViewDir,
             'path' => $path,
             'folder' => Str::after($moduleLivewireViewDir, 'views/'),
-            'file' => $moduleLivewireViewDir . '/' . $path . '.blade.php',
+            'file' => $moduleLivewireViewDir.'/'.$path.'.blade.php',
             'name' => strtr($path, ['/' => '.']),
         ];
     }
 
     protected function getStubInfo()
     {
-        $defaultStubDir = __DIR__ . '/../Commands/stubs/';
+        $defaultStubDir = __DIR__.'/../Commands/stubs/';
 
         $stubDir = File::isDirectory($publishedStubDir = base_path('stubs/modules-livewire/'))
             ? $publishedStubDir
@@ -117,7 +117,7 @@ trait ComponentParser
 
         if ($this->option('stub')) {
             $customStubDir = Str::of(base_path('stubs/'))
-                ->append($this->option('stub') . '/')
+                ->append($this->option('stub').'/')
                 ->replace(['../', './'], '');
 
             $stubDir = File::isDirectory($customStubDir) ? $customStubDir : $stubDir;
@@ -125,13 +125,13 @@ trait ComponentParser
 
         $classStubName = $this->isInline() ? 'livewire.inline.stub' : 'livewire.stub';
 
-        $classStub = File::exists($stubDir . $classStubName)
-            ? $stubDir . $classStubName
-            : $defaultStubDir . $classStubName;
+        $classStub = File::exists($stubDir.$classStubName)
+            ? $stubDir.$classStubName
+            : $defaultStubDir.$classStubName;
 
-        $viewStub = File::exists($stubDir . 'livewire.view.stub')
-            ? $stubDir . 'livewire.view.stub'
-            : $defaultStubDir . 'livewire.view.stub';
+        $viewStub = File::exists($stubDir.'livewire.view.stub')
+            ? $stubDir.'livewire.view.stub'
+            : $defaultStubDir.'livewire.view.stub';
 
         return (object) [
             'dir' => $stubDir,
@@ -166,7 +166,7 @@ trait ComponentParser
 
     protected function getClassSourcePath()
     {
-        return Str::after($this->component->class->file, $this->getBasePath() . '/');
+        return Str::after($this->component->class->file, $this->getBasePath().'/');
     }
 
     protected function getClassNamespace()
@@ -181,12 +181,12 @@ trait ComponentParser
 
     protected function getViewName()
     {
-        return $this->getModuleLowerName() . '::' . $this->component->view->folder . '.' . $this->component->view->name;
+        return $this->getModuleLowerName().'::'.$this->component->view->folder.'.'.$this->component->view->name;
     }
 
     protected function getViewSourcePath()
     {
-        return Str::after($this->component->view->file, $this->getBasePath() . '/');
+        return Str::after($this->component->view->file, $this->getBasePath().'/');
     }
 
     protected function getComponentTag()
@@ -204,7 +204,7 @@ trait ComponentParser
 
     protected function getComponentQuote()
     {
-        return "The <code>{$this->getClassName()}</code> livewire component is loaded from the " . ($this->isCustomModule() ? 'custom ' : '') . "<code>{$this->getModuleName()}</code> module.";
+        return "The <code>{$this->getClassName()}</code> livewire component is loaded from the ".($this->isCustomModule() ? 'custom ' : '')."<code>{$this->getModuleName()}</code> module.";
     }
 
     protected function getBasePath($path = null)
