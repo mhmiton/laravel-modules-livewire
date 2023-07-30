@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\Livewire;
 use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
-use Nwidart\Modules\Facades\Module;
 use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -42,7 +41,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
             return false;
         }
 
-        $modules = Module::toCollection();
+        $modules = \Nwidart\Modules\Facades\Module::toCollection();
 
         $modulesLivewireNamespace = config('modules-livewire.namespace', 'Livewire');
 

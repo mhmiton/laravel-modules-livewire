@@ -5,7 +5,12 @@
         "laravel",
         "modules",
         "module",
+        "laravel-modules",
+        "laravel-module",
+        "custom-modules",
+        "custom-module",
         "livewire",
+        "laravel-livewire",
         "nwidart",
         "mhmiton"
     ],
@@ -19,10 +24,8 @@
     ],
     "type": "library",
     "require": {
-        "php": ">=7.3"
-    },
-    "require-dev": {
-        "laravel/framework": "^7.0|^8.0|^9.0|^10.0"
+        "php": ">=8.0",
+        "laravel/framework": "^9.0|^10.0"
     },
     "extra": {
         "laravel": {
