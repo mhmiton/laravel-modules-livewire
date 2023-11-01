@@ -9,7 +9,7 @@ return [
     |
     */
 
-    'namespace' => 'Livewire',
+    'namespace' => 'app\\Livewire',
 
     /*
     |--------------------------------------------------------------------------
@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'view' => 'Resources/views/livewire',
+    'view' => 'resources/views/livewire',
 
     /*
     |--------------------------------------------------------------------------
