@@ -50,7 +50,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
                 ->append('/'.$modulesLivewireNamespace)
                 ->replace(['\\'], '/');
 
-            $namespace = config('modules.namespace', 'Modules').'\\'.$module->getName().'\\'.$modulesLivewireNamespace;
+            $namespace = ( method_exists( $module, 'getNamespace' ) ? $module->getNamespace() : config('modules.namespace', 'Modules') ).'\\'.$module->getName().'\\'.$modulesLivewireNamespace;
 
             $this->registerComponentDirectory($directory, $namespace, $module->getLowerName().'::');
         });
