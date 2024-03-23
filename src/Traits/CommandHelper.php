@@ -75,11 +75,11 @@ trait CommandHelper
             : $this->module->getLowerName();
     }
 
-    protected function getModulePath()
+    protected function getModulePath($withApp = false)
     {
         $path = $this->isCustomModule()
             ? config("modules-livewire.custom_modules.{$this->module}.path")
-            : $this->module->getPath();
+            : ($withApp ? $this->module->getAppPath() : $this->module->getPath());
 
         return strtr($path, ['\\' => '/']);
     }

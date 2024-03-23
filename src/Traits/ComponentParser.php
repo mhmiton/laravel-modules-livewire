@@ -60,7 +60,7 @@ trait ComponentParser
 
     protected function getClassInfo()
     {
-        $modulePath = $this->getModulePath();
+        $modulePath = $this->getModulePath(true);
 
         $moduleLivewireNamespace = $this->getModuleLivewireNamespace();
 
