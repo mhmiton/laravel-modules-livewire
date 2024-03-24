@@ -118,7 +118,7 @@ trait CommandHelper
 
     protected function getModuleLivewireViewDir()
     {
-        $moduleLivewireViewDir = config('modules-livewire.view', 'Resources/views/livewire');
+        $moduleLivewireViewDir = config('modules-livewire.view', 'resources/views/livewire');
 
         if ($this->isCustomModule()) {
             $moduleLivewireViewDir = config("modules-livewire.custom_modules.{$this->module}.view", $moduleLivewireViewDir);
