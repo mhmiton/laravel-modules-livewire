@@ -18,7 +18,7 @@ return [
     |
     */
 
-    'view' => 'Resources/views/livewire',
+    'view' => 'resources/views/livewire',
 
     /*
     |--------------------------------------------------------------------------
@@ -32,7 +32,7 @@ return [
     //         'path' => base_path('libraries/Chat'),
     //         'module_namespace' => 'Libraries\\Chat',
     //         // 'namespace' => 'Livewire',
-    //         // 'view' => 'Resources/views/livewire',
+    //         // 'view' => 'resources/views/livewire',
     //         // 'name_lower' => 'chat',
     //     ],
     // ],
