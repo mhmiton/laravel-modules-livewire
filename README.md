@@ -59,8 +59,8 @@ php artisan module:make-livewire Pages/AboutPage Core --force
 ```
 COMPONENT CREATED  🤙
 
-CLASS: Modules/Core/Livewire/Pages/AboutPage.php
-VIEW:  Modules/Core/Resources/views/livewire/pages/about-page.blade.php
+CLASS: Modules/Core/app/Livewire/Pages/AboutPage.php
+VIEW:  Modules/Core/resources/views/livewire/pages/about-page.blade.php
 TAG: <livewire:core::pages.about-page />
 ```
 
@@ -75,7 +75,7 @@ php artisan module:make-livewire Core Pages/AboutPage --inline
 ```
 COMPONENT CREATED  🤙
 
-CLASS: Modules/Core/Livewire/Pages/AboutPage.php
+CLASS: Modules/Core/app/Livewire/Pages/AboutPage.php
 TAG: <livewire:core::pages.about-page />
 ```
 
@@ -128,8 +128,8 @@ php artisan module:make-livewire Pages/AboutPage Core --view=pages.about
 ```
 COMPONENT CREATED  🤙
 
-CLASS: Modules/Core/Livewire/Pages/AboutPage.php
-VIEW:  Modules/Core/Resources/views/livewire/pages/about.blade.php
+CLASS: Modules/Core/app/Livewire/Pages/AboutPage.php
+VIEW:  Modules/Core/resources/views/livewire/pages/about.blade.php
 TAG: <livewire:core::pages.about-page />
 ```
 ### Rendering Components:
@@ -162,7 +162,7 @@ Remove comment for these lines & add your custom modules.
     //         'path' => base_path('libraries/Chat'),
     //         'module_namespace' => 'Libraries\\Chat',
     //         // 'namespace' => 'Livewire',
-    //         // 'view' => 'Resources/views/livewire',
+    //         // 'view' => 'resources/views/livewire',
     //         // 'name_lower' => 'chat',
     //     ],
     // ],
