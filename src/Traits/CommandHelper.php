@@ -9,7 +9,18 @@ trait CommandHelper
 {
     protected function isCustomModule()
     {
-        return $this->option('custom') === true;
+        $moduleName = $this->argument('module');
+
+        $module = $this->laravel['modules']->find($moduleName);
+
+        $modulePath = $module ? $module->getPath() : null;
+
+        // If module path not found, then check custom module path
+        if (! \File::isDirectory($modulePath)) {
+            return $this->getCustomModule() ? true : false;
+        }
+
+        return false;
     }
 
     protected function isForce()
@@ -24,8 +35,10 @@ trait CommandHelper
 
     protected function ensureDirectoryExists($path)
     {
-        if (! File::isDirectory(dirname($path))) {
-            File::makeDirectory(dirname($path), 0777, $recursive = true, $force = true);
+        $dir = File::extension($path) ? dirname($path) : $path;
+
+        if (! File::isDirectory($dir)) {
+            File::makeDirectory($dir, 0777, $recursive = true, $force = true);
         }
     }
 
@@ -34,7 +47,7 @@ trait CommandHelper
         $moduleName = $this->argument('module');
 
         if ($this->isCustomModule()) {
-            $module = config("modules-livewire.custom_modules.{$moduleName}");
+            $module = $this->getCustomModule();
 
             $path = $module['path'] ?? '';
 
@@ -57,6 +70,19 @@ trait CommandHelper
 
             return null;
         }
+
+        return $module;
+    }
+
+    protected function getCustomModule()
+    {
+        $moduleName = $this->argument('module');
+
+        $module = config('modules-livewire.custom_modules.'.$moduleName, null)
+            ? config('modules-livewire.custom_modules.'.$moduleName)
+            : collect(config('modules-livewire.custom_modules', []))
+                ->where('name_lower', $moduleName)
+                ->first();
 
         return $module;
     }
@@ -125,6 +151,17 @@ trait CommandHelper
         }
 
         return $this->getModulePath().'/'.$moduleLivewireViewDir;
+    }
+
+    protected function getModuleResourceViewDir()
+    {
+        $moduleResourceViewDir = config('modules.paths.generator.views.path', 'resources/views');
+
+        if ($this->isCustomModule()) {
+            $moduleResourceViewDir = config("modules-livewire.custom_modules.{$this->module}.views_path", $moduleResourceViewDir);
+        }
+
+        return $this->getModulePath().'/'.$moduleResourceViewDir;
     }
 
     protected function checkClassNameValid()

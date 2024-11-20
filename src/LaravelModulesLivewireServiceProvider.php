@@ -4,6 +4,7 @@ namespace Mhmiton\LaravelModulesLivewire;
 
 use Illuminate\Support\ServiceProvider;
 use Mhmiton\LaravelModulesLivewire\Commands\LivewireMakeCommand;
+use Mhmiton\LaravelModulesLivewire\Commands\VoltMakeCommand;
 use Mhmiton\LaravelModulesLivewire\Providers\LivewireComponentServiceProvider;
 
 class LaravelModulesLivewireServiceProvider extends ServiceProvider
@@ -50,6 +51,7 @@ class LaravelModulesLivewireServiceProvider extends ServiceProvider
 
         $this->commands([
             LivewireMakeCommand::class,
+            VoltMakeCommand::class,
         ]);
     }
 

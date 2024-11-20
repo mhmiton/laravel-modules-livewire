@@ -32,7 +32,7 @@ php artisan vendor:publish --tag=modules-livewire-config
 
 **Command Signature:**
 
-`php artisan module:make-livewire <Component> <Module> --view= --force --inline --stub= --custom`
+`php artisan module:make-livewire {component} {module} {--view=} {--force} {--inline} {--stub=}`
 
 **Example:**
 
@@ -93,6 +93,10 @@ After publishing the stubs, will create these files. And when running the make c
 stubs/modules-livewire/livewire.inline.stub
 stubs/modules-livewire/livewire.stub
 stubs/modules-livewire/livewire.view.stub
+
+// For Volt
+stubs/modules-livewire/volt-component-class.stub
+stubs/modules-livewire/volt-component.stub
 ```
 
 **You're able to set a custom stub directory for component with (--stub) option.**
@@ -141,6 +145,100 @@ TAG: <livewire:core::pages.about-page />
 ```
 <livewire:core::pages.about-page />
 ```
+
+### Volt:
+
+### Making Volt Components:
+
+**Command Signature:**
+
+`php artisan module:make-volt {component} {module} {--view=} {--class} {--functional} {--force} {--stub=}`
+
+**Example:**
+
+```
+php artisan module:make-volt volt.counter Core
+```
+
+**Force create component if the view already exists:**
+
+```
+php artisan module:make-volt volt.counter Core --force
+```
+
+**Output:**
+
+```
+VOLT COMPONENT CREATED  🤙
+
+VIEW:  modules/Core/resources/views/livewire/volt/counter.blade.php
+TAG: <livewire:core::volt.counter />
+```
+
+**Option (--view):**
+
+**You're able to set a registered view namespace for component with (--view) option.**
+
+```
+php artisan module:make-volt volt.counter Core --view=livewire
+```
+
+```
+php artisan module:make-volt volt.counter Core --view=pages
+```
+Note: Only registered view namespace will be support from the "volt_view_namespaces" config. By default registered view namespaces are 'livewire' and 'pages' in the config.
+
+```
+/*
+|--------------------------------------------------------------------------
+| View namespaces for volt
+|--------------------------------------------------------------------------
+|
+*/
+
+'volt_view_namespaces' => ['livewire', 'pages'],
+```
+
+**Option (--class):**
+
+**You're able to create class based volt component with (--class) option.**
+
+```
+php artisan module:make-volt volt.counter Core --class
+```
+
+**Option (--functional):**
+
+**You're able to create functional (API style) volt component with (--functional) option.**
+
+```
+php artisan module:make-volt volt.counter Core --functional
+```
+
+Note:: By default will be create class based or functional component by registered view namespace's files. If any class based component exists on the view namespace, then will be create class based component.
+
+**Modifying Stubs:**
+
+The `--stub` option is the same to `module::make-livewire`.
+
+### Rendering Volt Components:
+
+`<livewire:{module-lower-name}::component-view />`
+
+**Tag:**
+
+```
+<livewire:core::volt.counter />
+```
+
+**Route:**
+
+```
+use Livewire\Volt\Volt;
+
+Volt::route('/volt-counter', 'core::volt.counter');
+```
+
 ### Custom Module:
 
 **To create components for the custom module, should be add custom modules in the config file.**
@@ -150,26 +248,30 @@ The config file is located at `config/modules-livewire.php` after publishing the
 Remove comment for these lines & add your custom modules.
 
 ```
-    /*
-    |--------------------------------------------------------------------------
-    | Custom modules setup
-    |--------------------------------------------------------------------------
-    |
-    */
+/*
+|--------------------------------------------------------------------------
+| Custom modules setup
+|--------------------------------------------------------------------------
+|
+*/
 
-    // 'custom_modules' => [
-    //     'Chat' => [
-    //         'path' => base_path('libraries/Chat'),
-    //         'module_namespace' => 'Libraries\\Chat',
-    //         // 'namespace' => 'Livewire',
-    //         // 'view' => 'resources/views/livewire',
-    //         // 'name_lower' => 'chat',
-    //     ],
+'custom_modules' => [
+    // 'Chat' => [
+    //     'name_lower' => 'chat',
+    //     'path' => base_path('libraries/Chat'),
+    //     'module_namespace' => 'Libraries\\Chat',
+    //     'namespace' => 'Livewire',
+    //     'view' => 'resources/views/livewire',
+    //     'views_path' => 'resources/views',
+    //     'volt_view_namespaces' => ['livewire', 'pages'],
     // ],
+],
 ```
 
 **Custom module config details**
 
+> **name_lower:** Module name in lower case (required).
+>
 > **path:** Add module full path (required).
 >
 > **module_namespace:** Add module namespace (required).
@@ -178,7 +280,9 @@ Remove comment for these lines & add your custom modules.
 >
 > **view:** By default using `config('modules-livewire.view')` value. You can set a different value for the specific module.
 >
-> **name_lower:** By default using module name to lowercase. If you set a custom name, module components will be register by custom name.
+> **views_path:** Module resource view path (required).
+>
+> **volt_view_namespaces:** By default using `config('modules-livewire.volt_view_namespaces')` value. You can set a different value for the specific module.
 >
 
 ### License

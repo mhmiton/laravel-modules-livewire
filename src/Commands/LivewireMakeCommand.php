@@ -3,14 +3,15 @@
 namespace Mhmiton\LaravelModulesLivewire\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\PromptsForMissingInput;
 use Illuminate\Support\Facades\File;
-use Mhmiton\LaravelModulesLivewire\Traits\ComponentParser;
+use Mhmiton\LaravelModulesLivewire\Traits\LivewireComponentParser;
 
-class LivewireMakeCommand extends Command
+class LivewireMakeCommand extends Command implements PromptsForMissingInput
 {
-    use ComponentParser;
+    use LivewireComponentParser;
 
-    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--stub=} {--custom}';
+    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--stub=}';
 
     /**
      * The console command description.

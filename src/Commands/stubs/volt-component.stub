@@ -1,0 +1,11 @@
+<?php
+
+use function Livewire\Volt\{state};
+
+//
+
+?>
+
+<div>
+    <h3>[quote]</h3>
+</div>

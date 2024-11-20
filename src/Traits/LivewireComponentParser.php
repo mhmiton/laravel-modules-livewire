@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 
-trait ComponentParser
+trait LivewireComponentParser
 {
     use CommandHelper;
 
@@ -186,7 +186,9 @@ trait ComponentParser
 
     protected function getViewSourcePath()
     {
-        return Str::after($this->component->view->file, $this->getBasePath().'/');
+        return Str::of($this->component->view->file)
+            ->after($this->getBasePath().'/')
+            ->replace('//', '/');
     }
 
     protected function getComponentTag()
