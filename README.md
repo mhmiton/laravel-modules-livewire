@@ -67,7 +67,7 @@ TAG: <livewire:core::pages.about-page />
 **Inline Component:**
 
 ```
-php artisan module:make-livewire Core Pages/AboutPage --inline
+php artisan module:make-livewire Pages/AboutPage Core --inline
 ```
 
 **Output:**
@@ -102,15 +102,15 @@ stubs/modules-livewire/volt-component.stub
 **You're able to set a custom stub directory for component with (--stub) option.**
 
 ```
-php artisan module:make-livewire Core Pages/AboutPage --stub=about
+php artisan module:make-livewire Pages/AboutPage Core --stub=about
 ```
 
 ```
-php artisan module:make-livewire Core Pages/AboutPage --stub=modules-livewire/core
+php artisan module:make-livewire Pages/AboutPage Core --stub=modules-livewire/core
 ```
 
 ```
-php artisan module:make-livewire Core Pages/AboutPage --stub=./
+php artisan module:make-livewire Pages/AboutPage Core --stub=./
 ```
 
 **Extra Option (--view):**
