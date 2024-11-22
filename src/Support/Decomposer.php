@@ -12,9 +12,9 @@ class Decomposer
     public static function getComposerData()
     {
         try {
-            $composer = (new Filesystem())->get(base_path('composer.json'));
+            $composer = (new Filesystem())->get(base_path('composer.lock'));
 
-            return collect(json_decode($composer, true));
+            return collect(data_get(json_decode($composer, true), 'packages'));
         } catch (\Exception $e) {
             return collect([]);
         }
@@ -24,19 +24,13 @@ class Decomposer
     {
         $packages = self::getComposerData();
 
-        $packageFile = base_path("/vendor/{$packageName}/composer.json");
-
-        if (! file_exists($packageFile)) {
+        if (! \File::isDirectory(base_path("/vendor/{$packageName}"))) {
             return null;
         }
 
-        $version = $packages->get('require')[$packageName]
-            ?? $packages->get('require-dev')[$packageName]
-            ?? null;
+        $version = $packages->firstWhere('name', $packageName)['version'] ?? null;
 
-        return $version
-            ? (object) ['name' => $packageName, 'version' => $version]
-            : null;
+        return (object) ['name' => $packageName, 'version' => \Str::after($version, 'v')];
     }
 
     public static function hasPackage($packageName)

@@ -19,9 +19,7 @@ trait VoltComponentParser
 
     protected function parser()
     {
-        $checkDependencies = Decomposer::checkDependencies(
-            $this->isCustomModule() ? ['livewire/volt'] : null
-        );
+        $checkDependencies = Decomposer::checkDependencies(['livewire/volt']);
 
         if ($checkDependencies->type == 'error') {
             $this->line($checkDependencies->message);
