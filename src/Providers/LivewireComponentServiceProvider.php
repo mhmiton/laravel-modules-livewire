@@ -138,12 +138,18 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     public function registerModuleVoltViewFactory()
     {
-        $this->app->extend('view', function ($service, $app) {
+        $this->app->singleton('view', function ($app) {
             $engineResolver = $app['view.engine.resolver'];
             $finder = $app['view.finder'];
             $dispatcher = $app['events'];
 
-            return new ModuleVoltViewFactory($engineResolver, $finder, $dispatcher);
+            $view = new ModuleVoltViewFactory($engineResolver, $finder, $dispatcher);
+
+            $view->setContainer($app);
+
+            $view->share('app', $app);
+
+            return $view;
         });
 
         \View::clearResolvedInstance('view');
