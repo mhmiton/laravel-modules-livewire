@@ -138,18 +138,32 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     public function registerModuleVoltViewFactory()
     {
-        $this->app->singleton('view', function ($app) {
-            $engineResolver = $app['view.engine.resolver'];
-            $finder = $app['view.finder'];
-            $dispatcher = $app['events'];
+        $this->app->extend('view', function ($view, $app) {
+            $originalView = $app['view']; // Get the original ViewFactory instance
 
-            $view = new ModuleVoltViewFactory($engineResolver, $finder, $dispatcher);
+            $factory = new ModuleVoltViewFactory(
+                $app['view.engine.resolver'],
+                $app['view.finder'],
+                $app['events']
+            );
 
-            $view->setContainer($app);
+            // Copy existing view paths
+            foreach ($originalView->getFinder()->getPaths() as $path) {
+                $factory->getFinder()->addLocation($path);
+            }
 
-            $view->share('app', $app);
+            // Copy existing hint paths (this fixes the missing hint path issue)
+            foreach ($originalView->getFinder()->getHints() as $namespace => $paths) {
+                foreach ((array) $paths as $path) {
+                    $factory->addNamespace($namespace, $path);
+                }
+            }
 
-            return $view;
+            $factory->setContainer($app);
+
+            $factory->share('app', $app);
+
+            return $factory;
         });
 
         \View::clearResolvedInstance('view');
