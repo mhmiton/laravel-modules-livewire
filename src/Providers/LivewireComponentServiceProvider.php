@@ -138,9 +138,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     public function registerModuleVoltViewFactory()
     {
-        $this->app->extend('view', function ($view, $app) {
-            $originalView = $app['view']; // Get the original ViewFactory instance
-
+        $this->app->rebinding('view', function ($app, $originalView) {
             $factory = new ModuleVoltViewFactory(
                 $app['view.engine.resolver'],
                 $app['view.finder'],
@@ -152,18 +150,17 @@ class LivewireComponentServiceProvider extends ServiceProvider
                 $factory->getFinder()->addLocation($path);
             }
 
-            // Copy existing hint paths (this fixes the missing hint path issue)
+            // Copy existing hint paths (fixes missing hint path issue)
             foreach ($originalView->getFinder()->getHints() as $namespace => $paths) {
-                foreach ((array) $paths as $path) {
+                foreach ((array)$paths as $path) {
                     $factory->addNamespace($namespace, $path);
                 }
             }
 
             $factory->setContainer($app);
-
             $factory->share('app', $app);
 
-            return $factory;
+            $app->instance('view', $factory);
         });
 
         \View::clearResolvedInstance('view');
