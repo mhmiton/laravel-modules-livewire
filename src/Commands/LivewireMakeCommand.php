@@ -11,7 +11,13 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
 {
     use LivewireComponentParser;
 
-    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--stub=}';
+    protected $signature = 'module:make-livewire
+        {component : The name of the component}
+        {module : The module to generate the class in}
+        {--f|force : Overwrite existing files?}
+        {--i|inline : Create inline component}
+        {--view= : The view file name}
+        {--stub= : Use a custom stub}';
 
     /**
      * The console command description.
@@ -22,21 +28,17 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
 
     /**
      * Execute the console command.
-     *
-     * @return int
      */
-    public function handle()
+    public function handle(): int
     {
-        if (! $this->parser()) {
-            return false;
-        }
+        $checks = [
+            $this->parser(),
+            $this->checkClassNameValid(),
+            $this->checkReservedClassName(),
+        ];
 
-        if (! $this->checkClassNameValid()) {
-            return false;
-        }
-
-        if (! $this->checkReservedClassName()) {
-            return false;
+        if (in_array(false, $checks)) {
+            return Command::FAILURE;
         }
 
         $class = $this->createClass();
@@ -53,23 +55,23 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
             $class && $this->line("<options=bold;fg=green>TAG:</> {$class->tag}");
         }
 
-        return false;
+        return Command::SUCCESS;
     }
 
     protected function createClass()
     {
-        $classFile = $this->component->class->file;
+        $file = $this->component->class->file;
 
-        if (File::exists($classFile) && ! $this->isForce()) {
+        if (File::exists($file) && ! $this->isForce()) {
             $this->line("<options=bold,reverse;fg=red> WHOOPS-IE-TOOTLES </> 😳 \n");
             $this->line("<fg=red;options=bold>Class already exists:</> {$this->getClassSourcePath()}");
 
             return false;
         }
 
-        $this->ensureDirectoryExists($classFile);
+        $this->ensureDirectoryExists($file);
 
-        File::put($classFile, $this->getClassContents());
+        File::put($file, $this->getClassContents());
 
         return $this->component->class;
     }

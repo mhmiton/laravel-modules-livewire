@@ -4,7 +4,6 @@ namespace Mhmiton\LaravelModulesLivewire\Traits;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 use Mhmiton\LaravelModulesLivewire\Support\ModuleVoltComponentRegistry;
 
 trait VoltComponentParser
@@ -13,20 +12,10 @@ trait VoltComponentParser
 
     protected $component;
 
-    protected $module;
-
     protected $directories;
 
     protected function parser()
     {
-        $checkDependencies = Decomposer::checkDependencies(['livewire/volt']);
-
-        if ($checkDependencies->type == 'error') {
-            $this->line($checkDependencies->message);
-
-            return false;
-        }
-
         if (! $module = $this->getModule()) {
             return false;
         }
@@ -44,9 +33,9 @@ trait VoltComponentParser
 
     protected function getComponent()
     {
-        $viewInfo = $this->getViewInfo();
+        $viewInfo = $this->view();
 
-        $stubInfo = $this->getStubInfo();
+        $stubInfo = $this->stub();
 
         return (object) [
             'view' => $viewInfo,
@@ -54,7 +43,7 @@ trait VoltComponentParser
         ];
     }
 
-    protected function getViewInfo()
+    protected function view()
     {
         $moduleVoltResourceViewDir = $this->getModuleVoltResourceViewDir();
 
@@ -76,7 +65,7 @@ trait VoltComponentParser
 
     protected function getModuleVoltComponentData()
     {
-        return (new ModuleVoltComponentRegistry())->getModuleComponentData(
+        return (new ModuleVoltComponentRegistry)->getModuleComponentData(
             $this->getModuleLowerName()
         );
     }
@@ -111,7 +100,7 @@ trait VoltComponentParser
         return $moduleVoltResourceViewDir;
     }
 
-    protected function getStubInfo()
+    protected function stub()
     {
         $defaultStubDir = __DIR__.'/../Commands/stubs/';
 
@@ -216,8 +205,10 @@ trait VoltComponentParser
             if ($file->getExtension() === 'php' && str_ends_with($file->getFilename(), '.blade.php')) {
                 $content = File::get($file->getPathname());
 
-                if (str_contains($content, 'use Livewire\Volt\Component') ||
-                    str_contains($content, 'new class extends Component')) {
+                if (
+                    str_contains($content, 'use Livewire\Volt\Component') ||
+                    str_contains($content, 'new class extends Component')
+                ) {
                     return true;
                 }
             }

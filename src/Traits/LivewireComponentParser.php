@@ -4,7 +4,7 @@ namespace Mhmiton\LaravelModulesLivewire\Traits;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
+use Nwidart\Modules\Helpers\Path;
 
 trait LivewireComponentParser
 {
@@ -12,31 +12,22 @@ trait LivewireComponentParser
 
     protected $component;
 
-    protected $module;
-
     protected $directories;
 
-    protected function parser()
+    protected $file;
+
+    protected function parser(): self|bool
     {
-        $checkDependencies = Decomposer::checkDependencies(
-            $this->isCustomModule() ? ['livewire/livewire'] : null
-        );
-
-        if ($checkDependencies->type == 'error') {
-            $this->line($checkDependencies->message);
-
-            return false;
-        }
-
         if (! $module = $this->getModule()) {
             return false;
         }
 
         $this->module = $module;
 
-        $this->directories = collect(
-            preg_split('/[.\/(\\\\)]+/', $this->argument('component'))
-        )->map([Str::class, 'studly']);
+        $this->file = Path::studly($this->argument('component'));
+
+        $this->directories = collect(preg_split('/[.\/(\\\\)]+/', Path::directory($this->argument('component'))))
+            ->map([Str::class, 'studly']);
 
         $this->component = $this->getComponent();
 
@@ -45,69 +36,49 @@ trait LivewireComponentParser
 
     protected function getComponent()
     {
-        $classInfo = $this->getClassInfo();
-
-        $viewInfo = $this->getViewInfo();
-
-        $stubInfo = $this->getStubInfo();
-
         return (object) [
-            'class' => $classInfo,
-            'view' => $viewInfo,
-            'stub' => $stubInfo,
+            'class' => $this->class(),
+            'view' => $this->view(),
+            'stub' => $this->stub(),
         ];
     }
 
-    protected function getClassInfo()
+    protected function class()
     {
-        $modulePath = $this->getModulePath(true);
-
-        $moduleLivewireNamespace = $this->getModuleLivewireNamespace();
-
-        $classDir = (string) Str::of($modulePath)
-            ->append('/'.$moduleLivewireNamespace)
-            ->replace(['\\'], '/');
-
-        $classPath = $this->directories->implode('/');
-
-        $namespace = $this->getNamespace($classPath);
-
-        $className = $this->directories->last();
-
-        $componentTag = $this->getComponentTag();
+        $dir = $this->path($this->getModulePath($this->getModuleLivewirePath())); // todo: examine app/ path handling.
+        $path = $this->directories->implode('/');
+        $filename = Path::join($dir, $this->file);
 
         return (object) [
-            'dir' => $classDir,
-            'path' => $classPath,
-            'file' => $classDir.'/'.$classPath.'.php',
-            'namespace' => $namespace,
-            'name' => $className,
-            'tag' => $componentTag,
+            'name' => Path::filename($this->file),
+            'path' => $path,
+            'namespace' => $this->getNamespace($path),
+            'file' => "{$filename}.php",
+            'dir' => $dir,
+            'tag' => $this->getComponentTag(),
         ];
     }
 
-    protected function getViewInfo()
+    protected function view()
     {
-        $moduleLivewireViewDir = $this->getModuleLivewireViewDir();
-
-        $path = $this->directories
-            ->map([Str::class, 'kebab'])
-            ->implode('/');
-
+        $dir = $this->getModuleLivewireViewDir();
+        $path = $this->directories->map([Str::class, 'kebab'])->implode('/');
         if ($this->option('view')) {
             $path = strtr($this->option('view'), ['.' => '/']);
         }
+        $file = Path::lower($this->file);
+        $filename = Path::join($dir, $file);
 
         return (object) [
-            'dir' => $moduleLivewireViewDir,
+            'name' => strtr($file, ['/' => '.']),
             'path' => $path,
-            'folder' => Str::after($moduleLivewireViewDir, 'views/'),
-            'file' => $moduleLivewireViewDir.'/'.$path.'.blade.php',
-            'name' => strtr($path, ['/' => '.']),
+            'file' => "{$filename}.blade.php",
+            'folder' => Str::after($dir, 'views/'),
+            'dir' => $dir,
         ];
     }
 
-    protected function getStubInfo()
+    protected function stub()
     {
         $defaultStubDir = __DIR__.'/../Commands/stubs/';
 
@@ -149,8 +120,18 @@ trait LivewireComponentParser
         }
 
         return preg_replace(
-            ['/\[namespace\]/', '/\[class\]/', '/\[view\]/'],
-            [$this->getClassNamespace(), $this->getClassName(), $this->getViewName()],
+            [
+                '/\[namespace\]/',
+                '/\[class\]/',
+                '/\[view\]/',
+                '/\[layout\]/',
+            ],
+            [
+                $this->getClassNamespace(),
+                $this->getClassName(),
+                $this->getViewName(),
+                config('livewire.layout', 'components.layouts.app'),
+            ],
             $template,
         );
     }
@@ -193,23 +174,26 @@ trait LivewireComponentParser
 
     protected function getComponentTag()
     {
-        $directoryAsView = $this->directories
-            ->map([Str::class, 'kebab'])
-            ->implode('.');
-
+        $directoryAsView = Str::of($this->file)->explode('/')->map([Str::class, 'kebab'])->implode('.');
         $tag = "<livewire:{$this->getModuleLowerName()}::{$directoryAsView} />";
 
-        $tagWithOutIndex = Str::replaceLast('.index', '', $tag);
-
-        return $tagWithOutIndex;
+        return Str::replaceLast('.index', '', $tag);
     }
 
     protected function getComponentQuote()
     {
-        return "The <code>{$this->getClassName()}</code> livewire component is loaded from the ".($this->isCustomModule() ? 'custom ' : '')."<code>{$this->getModuleName()}</code> module.";
+        $file = Str::of($this->file)->explode('/')->implode(' / ');
+
+        return "<code>{$this->getModuleName()}".($this->isCustomModule() ? ' (custom)' : '').": {$file}</code>";
     }
 
-    protected function getBasePath($path = null)
+    /**
+     * Retrieves the root path for the application.
+     *
+     * @param  string|null  $path  Optional subpath to append to the base path.
+     * @return string The full base path for the application.
+     */
+    protected function getBasePath(?string $path = null): string
     {
         return strtr(base_path($path), ['\\' => '/']);
     }

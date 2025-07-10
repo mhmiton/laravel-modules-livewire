@@ -3,24 +3,25 @@
 namespace Mhmiton\LaravelModulesLivewire\Providers;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\Livewire;
-use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 use Mhmiton\LaravelModulesLivewire\Support\ModuleVoltComponentRegistry;
 use Mhmiton\LaravelModulesLivewire\View\ModuleVoltViewFactory;
+use Nwidart\Modules\Traits\PathNamespace;
 use ReflectionClass;
 use Symfony\Component\Finder\SplFileInfo;
 
 class LivewireComponentServiceProvider extends ServiceProvider
 {
+    use PathNamespace;
+
     /**
      * Register the service provider.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->registerModuleComponents();
 
@@ -31,38 +32,30 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     /**
      * Get the services provided by the provider.
-     *
-     * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return [];
     }
 
     protected function registerModuleComponents()
     {
-        if (Decomposer::checkDependencies()->type == 'error') {
-            return false;
-        }
-
         $modules = \Nwidart\Modules\Facades\Module::toCollection();
 
-        $modulesLivewireNamespace = config('modules-livewire.namespace', 'Livewire');
+        $modulesLivewireNamespace = config('livewire.class_namespace', 'App\\Livewire');
 
         $modules->each(function ($module) use ($modulesLivewireNamespace) {
-            $directory = (string) Str::of($module->getAppPath())
-                ->append('/'.$modulesLivewireNamespace)
-                ->replace(['\\'], '/');
+            $directory = Str::of($module->app_path($modulesLivewireNamespace))->toString();
 
             $moduleNamespace = method_exists($module, 'getNamespace')
                 ? $module->getNamespace()
                 : config('modules.namespace', 'Modules');
 
-            $namespace = $moduleNamespace.'\\'.$module->getName().'\\'.$modulesLivewireNamespace;
+            $namespace = $this->namespace($moduleNamespace.'\\'.$module->getName().'\\'.$modulesLivewireNamespace);
 
             $this->registerComponentDirectory($directory, $namespace, $module->getLowerName().'::');
 
-            (new ModuleVoltComponentRegistry())
+            (new ModuleVoltComponentRegistry)
                 ->registerComponents([
                     'path' => $module->getPath(),
                     'aliasPrefix' => $module->getLowerName().'::',
@@ -74,14 +67,10 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     protected function registerCustomModuleComponents()
     {
-        if (Decomposer::checkDependencies(['livewire/livewire'])->type == 'error') {
-            return false;
-        }
-
         $modules = collect(config('modules-livewire.custom_modules', []));
 
         $modules->each(function ($module, $moduleName) {
-            $moduleLivewireNamespace = $module['namespace'] ?? config('modules-livewire.namespace', 'Livewire');
+            $moduleLivewireNamespace = $module['namespace'] ?? config('livewire.class_namespace', 'App\\Livewire');
 
             $directory = (string) Str::of($module['path'] ?? '')
                 ->append('/'.$moduleLivewireNamespace)
@@ -93,7 +82,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
             $this->registerComponentDirectory($directory, $namespace, $lowerName.'::');
 
-            (new ModuleVoltComponentRegistry())
+            (new ModuleVoltComponentRegistry)
                 ->registerComponents([
                     'path' => $module['path'] ?? null,
                     'aliasPrefix' => $lowerName.'::',
@@ -105,7 +94,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     protected function registerComponentDirectory($directory, $namespace, $aliasPrefix = '')
     {
-        $filesystem = new Filesystem();
+        $filesystem = new Filesystem;
 
         if (! $filesystem->isDirectory($directory)) {
             return false;
@@ -138,10 +127,6 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     public function registerModuleVoltViewFactory()
     {
-        if (Decomposer::checkDependencies(['livewire/volt'])->type == 'error') {
-            return false;
-        }
-
         $this->app->extend('view', function ($view, $app) {
             $factory = new ModuleVoltViewFactory(
                 $app['view.engine.resolver'],
@@ -168,6 +153,6 @@ class LivewireComponentServiceProvider extends ServiceProvider
             return $factory;
         });
 
-        \View::clearResolvedInstance('view');
+        View::clearResolvedInstance('view');
     }
 }
