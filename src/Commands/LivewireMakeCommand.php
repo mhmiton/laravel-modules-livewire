@@ -11,7 +11,13 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
 {
     use LivewireComponentParser;
 
-    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--stub=}';
+    protected $signature = 'module:make-livewire
+        {component : The name of the component}
+        {module : The module to generate the class in}
+        {--f|force : Overwrite existing files?}
+        {--i|inline : Create inline component}
+        {--view= : The view file name}
+        {--stub= : Use a custom stub}';
 
     /**
      * The console command description.
