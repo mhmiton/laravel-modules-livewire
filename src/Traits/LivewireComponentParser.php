@@ -134,11 +134,13 @@ trait LivewireComponentParser
                 '/\[namespace\]/',
                 '/\[class\]/',
                 '/\[view\]/',
+                '/\[layout\]/',
             ],
             [
                 $this->getClassNamespace(),
                 $this->getClassName(),
                 $this->getViewName(),
+                config('livewire.layout', 'components.layouts.app'),
             ],
             $template,
         );

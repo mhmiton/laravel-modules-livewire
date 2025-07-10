@@ -8,6 +8,9 @@ class [class] extends Component
 {
     public function render()
     {
-        return view('[view]');
+        return view('[view]')->layout('[layout]', [
+            'title' => '',
+            'description' => '',
+        ]);
     }
 }
