@@ -11,11 +11,9 @@ trait LivewireComponentParser
 
     protected $component;
 
-    protected $module;
-
     protected $directories;
 
-    protected function parser()
+    protected function parser(): self|bool
     {
         if (! $module = $this->getModule()) {
             return false;
@@ -34,20 +32,14 @@ trait LivewireComponentParser
 
     protected function getComponent()
     {
-        $classInfo = $this->getClassInfo();
-
-        $viewInfo = $this->getViewInfo();
-
-        $stubInfo = $this->getStubInfo();
-
         return (object) [
-            'class' => $classInfo,
-            'view' => $viewInfo,
-            'stub' => $stubInfo,
+            'class' => $this->class(),
+            'view' => $this->view(),
+            'stub' => $this->stub(),
         ];
     }
 
-    protected function getClassInfo()
+    protected function class()
     {
         $modulePath = $this->getModulePath(true);
 
@@ -75,7 +67,7 @@ trait LivewireComponentParser
         ];
     }
 
-    protected function getViewInfo()
+    protected function view()
     {
         $moduleLivewireViewDir = $this->getModuleLivewireViewDir();
 
@@ -96,7 +88,7 @@ trait LivewireComponentParser
         ];
     }
 
-    protected function getStubInfo()
+    protected function stub()
     {
         $defaultStubDir = __DIR__.'/../Commands/stubs/';
 
@@ -138,8 +130,16 @@ trait LivewireComponentParser
         }
 
         return preg_replace(
-            ['/\[namespace\]/', '/\[class\]/', '/\[view\]/'],
-            [$this->getClassNamespace(), $this->getClassName(), $this->getViewName()],
+            [
+                '/\[namespace\]/',
+                '/\[class\]/',
+                '/\[view\]/',
+            ],
+            [
+                $this->getClassNamespace(),
+                $this->getClassName(),
+                $this->getViewName(),
+            ],
             $template,
         );
     }
@@ -198,7 +198,13 @@ trait LivewireComponentParser
         return "The <code>{$this->getClassName()}</code> livewire component is loaded from the ".($this->isCustomModule() ? 'custom ' : '')."<code>{$this->getModuleName()}</code> module.";
     }
 
-    protected function getBasePath($path = null)
+    /**
+     * Retrieves the root path for the application.
+     *
+     * @param  string|null  $path  Optional subpath to append to the base path.
+     * @return string The full base path for the application.
+     */
+    protected function getBasePath(?string $path = null): string
     {
         return strtr(base_path($path), ['\\' => '/']);
     }

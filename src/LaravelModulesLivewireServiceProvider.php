@@ -11,20 +11,13 @@ class LaravelModulesLivewireServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
-     *
-     * @return void
      */
-    public function register()
-    {
-        //
-    }
+    public function register(): void {}
 
     /**
      * Bootstrap services.
-     *
-     * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerProviders();
 

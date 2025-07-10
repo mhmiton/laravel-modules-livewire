@@ -2,14 +2,18 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Support;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Livewire\Livewire;
+use Livewire\Volt;
+use Nwidart\Modules\Facades\Module;
 
 class ModuleVoltComponentRegistry
 {
     public function registerComponents($options = [])
     {
-        if (! class_exists(\Livewire\Volt\Volt::class)) {
+        if (! class_exists(Volt\Volt::class)) {
             return false;
         }
 
@@ -19,7 +23,7 @@ class ModuleVoltComponentRegistry
 
         $namespace = data_get($options, 'namespace');
 
-        $viewNamespaces = collect(\Arr::wrap(data_get($options, 'view_namespaces')))->filter()->all();
+        $viewNamespaces = collect(Arr::wrap(data_get($options, 'view_namespaces')))->filter()->all();
 
         // $this->mountModuleVoltComponents(Str::before($aliasPrefix, '::'));
 
@@ -35,7 +39,7 @@ class ModuleVoltComponentRegistry
 
                 // Alias To Class
                 $componentClassNameWithoutNamespace = Str::of($alias)
-                    ->after("counter::")
+                    ->after('counter::')
                     ->explode('.')
                     ->map([Str::class, 'studly'])
                     ->implode('\\');
@@ -60,12 +64,12 @@ class ModuleVoltComponentRegistry
 
                 $fullViewPath = $path.'/'.$viewPath;
 
-                if (! \File::isDirectory($fullViewPath)) {
+                if (! File::isDirectory($fullViewPath)) {
                     return [];
                 }
 
-                $fileToComponents = collect(\File::allFiles($fullViewPath))
-                    ->filter(fn($file) => str_ends_with($file->getFilename(), '.blade.php'))
+                $fileToComponents = collect(File::allFiles($fullViewPath))
+                    ->filter(fn ($file) => str_ends_with($file->getFilename(), '.blade.php'))
                     ->map(function ($file) use ($aliasPrefix, $viewPath) {
                         $view = (string) Str::of($file->getPathname())
                             ->afterLast($viewPath)
@@ -94,16 +98,16 @@ class ModuleVoltComponentRegistry
 
     public function getModuleComponentData($moduleName = null)
     {
-        $modulePath = $moduleName ? \Module::getModulePath($moduleName) : null;
+        $modulePath = $moduleName ? Module::getModulePath($moduleName) : null;
 
         $moduleResourceViewPath = config('modules.paths.generator.views.path', 'resources/views');
 
         $moduleVoltViewNamespaces = collect(
-            \Arr::wrap(config('modules-livewire.volt_view_namespace', ['livewire', 'pages']))
+            Arr::wrap(config('modules-livewire.volt_view_namespace', ['livewire', 'pages']))
         )->filter()->all();
 
         // If module path not found, then check custom module path
-        if (! \File::isDirectory($modulePath)) {
+        if (! File::isDirectory($modulePath)) {
             $customModule = collect(config('modules-livewire.custom_modules', []))
                 ->where('name_lower', $moduleName)
                 ->first();
@@ -113,7 +117,7 @@ class ModuleVoltComponentRegistry
             $moduleResourceViewPath = data_get($customModule, 'views_path') ?? 'resources/views';
 
             $moduleVoltViewNamespaces = collect(
-                \Arr::wrap($customModule['volt_view_namespaces'] ?? ['livewire', 'pages'])
+                Arr::wrap($customModule['volt_view_namespaces'] ?? ['livewire', 'pages'])
             )->filter()->all();
         }
 
@@ -125,7 +129,7 @@ class ModuleVoltComponentRegistry
                 ? strtr($modulePath.'/'.$moduleResourceViewPath, ['//' => '/'])
                 : $moduleResourceViewPath,
             'volt_view_namespaces' => $moduleVoltViewNamespaces,
-            'is_path_exists' => \File::isDirectory($modulePath),
+            'is_path_exists' => File::isDirectory($modulePath),
             'is_custom_module' => $customModule ?? false,
         ];
 
@@ -140,13 +144,13 @@ class ModuleVoltComponentRegistry
             ->map(fn ($viewNamespace) => data_get($moduleComponentData, 'view_path_full').'/'.$viewNamespace)
             ->all();
 
-        \Livewire\Volt\Volt::mount($mountPaths);
+        Volt\Volt::mount($mountPaths);
     }
 
     public function component($alias, $path)
     {
-        $voltComponentRegistry = new \Livewire\Volt\ComponentFactory(
-            new \Livewire\Volt\MountedDirectories()
+        $voltComponentRegistry = new Volt\ComponentFactory(
+            new Volt\MountedDirectories
         );
 
         $componentClass = $voltComponentRegistry->make($alias, $path);

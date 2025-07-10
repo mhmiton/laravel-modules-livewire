@@ -3,7 +3,8 @@
 namespace Mhmiton\LaravelModulesLivewire\Traits;
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Str;
+use Livewire\Features\SupportConsoleCommands\Commands\MakeCommand;
+use Nwidart\Modules\Traits\PathNamespace;
 
 trait CommandHelper
 {
@@ -19,12 +20,25 @@ trait CommandHelper
         return $this->option('force') === true;
     }
 
-    protected function isInline()
+    /**
+     * Determines if the 'inline' option has been set to true.
+     *
+     * @return bool Returns true if the 'inline' option is enabled; otherwise, false.
+     */
+    protected function isInline(): bool
     {
         return $this->option('inline') === true;
     }
 
-    protected function ensureDirectoryExists($path)
+    /**
+     * Ensures that the specified directory exists.
+     *
+     * If the given path is a file, it determines the directory name from the path.
+     * If the directory does not exist, it creates it with the specified permissions.
+     *
+     * @param  string  $path  The file or directory path to check or create.
+     */
+    protected function ensureDirectoryExists(string $path): void
     {
         $dir = File::extension($path) ? dirname($path) : $path;
 
@@ -59,11 +73,11 @@ trait CommandHelper
 
     protected function isClassNameValid($name)
     {
-        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand())->isClassNameValid($name);
+        return (new MakeCommand)->isClassNameValid($name);
     }
 
     protected function isReservedClassName($name)
     {
-        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand())->isReservedClassName($name);
+        return (new MakeCommand)->isReservedClassName($name);
     }
 }

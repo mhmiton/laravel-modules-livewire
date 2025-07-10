@@ -3,6 +3,7 @@
 namespace Mhmiton\LaravelModulesLivewire\Providers;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -16,10 +17,8 @@ class LivewireComponentServiceProvider extends ServiceProvider
 {
     /**
      * Register the service provider.
-     *
-     * @return void
      */
-    public function register()
+    public function register(): void
     {
         $this->registerModuleComponents();
 
@@ -30,10 +29,8 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     /**
      * Get the services provided by the provider.
-     *
-     * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return [];
     }
@@ -57,7 +54,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
             $this->registerComponentDirectory($directory, $namespace, $module->getLowerName().'::');
 
-            (new ModuleVoltComponentRegistry())
+            (new ModuleVoltComponentRegistry)
                 ->registerComponents([
                     'path' => $module->getPath(),
                     'aliasPrefix' => $module->getLowerName().'::',
@@ -84,7 +81,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
             $this->registerComponentDirectory($directory, $namespace, $lowerName.'::');
 
-            (new ModuleVoltComponentRegistry())
+            (new ModuleVoltComponentRegistry)
                 ->registerComponents([
                     'path' => $module['path'] ?? null,
                     'aliasPrefix' => $lowerName.'::',
@@ -96,7 +93,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     protected function registerComponentDirectory($directory, $namespace, $aliasPrefix = '')
     {
-        $filesystem = new Filesystem();
+        $filesystem = new Filesystem;
 
         if (! $filesystem->isDirectory($directory)) {
             return false;
@@ -155,6 +152,6 @@ class LivewireComponentServiceProvider extends ServiceProvider
             return $factory;
         });
 
-        \View::clearResolvedInstance('view');
+        View::clearResolvedInstance('view');
     }
 }
