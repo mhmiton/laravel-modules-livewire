@@ -42,7 +42,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
     {
         $modules = \Nwidart\Modules\Facades\Module::toCollection();
 
-        $modulesLivewireNamespace = config('modules-livewire.namespace', 'Livewire');
+        $modulesLivewireNamespace = config('livewire.class_namespace', 'App\\Livewire');
 
         $modules->each(function ($module) use ($modulesLivewireNamespace) {
             $directory = (string) Str::of($module->getAppPath())
@@ -72,7 +72,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
         $modules = collect(config('modules-livewire.custom_modules', []));
 
         $modules->each(function ($module, $moduleName) {
-            $moduleLivewireNamespace = $module['namespace'] ?? config('modules-livewire.namespace', 'Livewire');
+            $moduleLivewireNamespace = $module['namespace'] ?? config('livewire.class_namespace', 'App\\Livewire');
 
             $directory = (string) Str::of($module['path'] ?? '')
                 ->append('/'.$moduleLivewireNamespace)
