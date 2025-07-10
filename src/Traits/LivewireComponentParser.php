@@ -4,7 +4,6 @@ namespace Mhmiton\LaravelModulesLivewire\Traits;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 
 trait LivewireComponentParser
 {
@@ -18,16 +17,6 @@ trait LivewireComponentParser
 
     protected function parser()
     {
-        $checkDependencies = Decomposer::checkDependencies(
-            $this->isCustomModule() ? ['livewire/livewire'] : null
-        );
-
-        if ($checkDependencies->type == 'error') {
-            $this->line($checkDependencies->message);
-
-            return false;
-        }
-
         if (! $module = $this->getModule()) {
             return false;
         }

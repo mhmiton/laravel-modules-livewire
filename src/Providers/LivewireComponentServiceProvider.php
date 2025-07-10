@@ -7,7 +7,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\Livewire;
-use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 use Mhmiton\LaravelModulesLivewire\Support\ModuleVoltComponentRegistry;
 use Mhmiton\LaravelModulesLivewire\View\ModuleVoltViewFactory;
 use ReflectionClass;
@@ -41,10 +40,6 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     protected function registerModuleComponents()
     {
-        if (Decomposer::checkDependencies()->type == 'error') {
-            return false;
-        }
-
         $modules = \Nwidart\Modules\Facades\Module::toCollection();
 
         $modulesLivewireNamespace = config('modules-livewire.namespace', 'Livewire');
@@ -74,10 +69,6 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     protected function registerCustomModuleComponents()
     {
-        if (Decomposer::checkDependencies(['livewire/livewire'])->type == 'error') {
-            return false;
-        }
-
         $modules = collect(config('modules-livewire.custom_modules', []));
 
         $modules->each(function ($module, $moduleName) {
@@ -138,10 +129,6 @@ class LivewireComponentServiceProvider extends ServiceProvider
 
     public function registerModuleVoltViewFactory()
     {
-        if (Decomposer::checkDependencies(['livewire/volt'])->type == 'error') {
-            return false;
-        }
-
         $this->app->extend('view', function ($view, $app) {
             $factory = new ModuleVoltViewFactory(
                 $app['view.engine.resolver'],
