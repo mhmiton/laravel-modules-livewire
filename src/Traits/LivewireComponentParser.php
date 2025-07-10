@@ -4,6 +4,7 @@ namespace Mhmiton\LaravelModulesLivewire\Traits;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Nwidart\Modules\Helpers\Path;
 
 trait LivewireComponentParser
 {
@@ -13,6 +14,8 @@ trait LivewireComponentParser
 
     protected $directories;
 
+    protected $file;
+
     protected function parser(): self|bool
     {
         if (! $module = $this->getModule()) {
@@ -21,9 +24,10 @@ trait LivewireComponentParser
 
         $this->module = $module;
 
-        $this->directories = collect(
-            preg_split('/[.\/(\\\\)]+/', $this->argument('component'))
-        )->map([Str::class, 'studly']);
+        $this->file = Path::studly($this->argument('component'));
+
+        $this->directories = collect(preg_split('/[.\/(\\\\)]+/', Path::directory($this->argument('component'))))
+            ->map([Str::class, 'studly']);
 
         $this->component = $this->getComponent();
 
@@ -41,50 +45,36 @@ trait LivewireComponentParser
 
     protected function class()
     {
-        $modulePath = $this->getModulePath(true);
-
-        $moduleLivewireNamespace = $this->getModuleLivewireNamespace();
-
-        $classDir = (string) Str::of($modulePath)
-            ->append('/'.$moduleLivewireNamespace)
-            ->replace(['\\'], '/');
-
-        $classPath = $this->directories->implode('/');
-
-        $namespace = $this->getNamespace($classPath);
-
-        $className = $this->directories->last();
-
-        $componentTag = $this->getComponentTag();
+        $dir = $this->path($this->getModulePath($this->getModuleLivewirePath())); // todo: examine app/ path handling.
+        $path = $this->directories->implode('/');
+        $filename = Path::join($dir, $this->file);
 
         return (object) [
-            'dir' => $classDir,
-            'path' => $classPath,
-            'file' => $classDir.'/'.$classPath.'.php',
-            'namespace' => $namespace,
-            'name' => $className,
-            'tag' => $componentTag,
+            'name' => Path::filename($this->file),
+            'path' => $path,
+            'namespace' => $this->getNamespace($path),
+            'file' => "{$filename}.php",
+            'dir' => $dir,
+            'tag' => $this->getComponentTag(),
         ];
     }
 
     protected function view()
     {
-        $moduleLivewireViewDir = $this->getModuleLivewireViewDir();
-
-        $path = $this->directories
-            ->map([Str::class, 'kebab'])
-            ->implode('/');
-
+        $dir = $this->getModuleLivewireViewDir();
+        $path = $this->directories->map([Str::class, 'kebab'])->implode('/');
         if ($this->option('view')) {
             $path = strtr($this->option('view'), ['.' => '/']);
         }
+        $file = Path::lower($this->file);
+        $filename = Path::join($dir, $file);
 
         return (object) [
-            'dir' => $moduleLivewireViewDir,
+            'name' => strtr($file, ['/' => '.']),
             'path' => $path,
-            'folder' => Str::after($moduleLivewireViewDir, 'views/'),
-            'file' => $moduleLivewireViewDir.'/'.$path.'.blade.php',
-            'name' => strtr($path, ['/' => '.']),
+            'file' => "{$filename}.blade.php",
+            'folder' => Str::after($dir, 'views/'),
+            'dir' => $dir,
         ];
     }
 
@@ -184,20 +174,17 @@ trait LivewireComponentParser
 
     protected function getComponentTag()
     {
-        $directoryAsView = $this->directories
-            ->map([Str::class, 'kebab'])
-            ->implode('.');
-
+        $directoryAsView = Str::of($this->file)->explode('/')->map([Str::class, 'kebab'])->implode('.');
         $tag = "<livewire:{$this->getModuleLowerName()}::{$directoryAsView} />";
 
-        $tagWithOutIndex = Str::replaceLast('.index', '', $tag);
-
-        return $tagWithOutIndex;
+        return Str::replaceLast('.index', '', $tag);
     }
 
     protected function getComponentQuote()
     {
-        return "The <code>{$this->getClassName()}</code> livewire component is loaded from the ".($this->isCustomModule() ? 'custom ' : '')."<code>{$this->getModuleName()}</code> module.";
+        $file = Str::of($this->file)->explode('/')->implode(' / ');
+
+        return "<code>{$this->getModuleName()}".($this->isCustomModule() ? ' (custom)' : '').": {$file}</code>";
     }
 
     /**
