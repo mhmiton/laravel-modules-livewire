@@ -5,6 +5,8 @@ namespace Mhmiton\LaravelModulesLivewire\Tests\Feature\Commands;
 use Illuminate\Support\Facades\File;
 use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
+require_once __DIR__.'/../../TestCase.php';
+
 class LivewireMakeCommandTest extends TestCase
 {
     public function setUp(): void
@@ -23,47 +25,47 @@ class LivewireMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'TestCore'
         ])
         ->assertExitCode(0);
 
-        $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
-        $this->assertFileExists(base_path('Modules/Core/resources/views/livewire/pages/about-page.blade.php'));
+        $this->assertFileExists(base_path('Modules/TestCore/app/Livewire/Pages/AboutPage.php'));
+        $this->assertFileExists(base_path('Modules/TestCore/resources/views/livewire/pages/⚡about-page.blade.php'));
     }
 
     public function test_can_create_livewire_component_with_backslash_notation()
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Pages\\AboutPage',
-            'module' => 'Core'
+            'module' => 'TestCore'
         ])
         ->assertExitCode(0);
 
-        $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
+        $this->assertFileExists(base_path('Modules/TestCore/app/Livewire/Pages/AboutPage.php'));
     }
 
     public function test_can_create_livewire_component_with_dot_notation()
     {
         $this->artisan('module:make-livewire', [
             'component' => 'pages.about-page',
-            'module' => 'Core'
+            'module' => 'TestCore'
         ])
         ->assertExitCode(0);
 
-        $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
+        $this->assertFileExists(base_path('Modules/TestCore/app/Livewire/Pages/AboutPage.php'));
     }
 
     public function test_can_create_inline_component()
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core',
+            'module' => 'TestCore',
             '--inline' => true
         ])
         ->assertExitCode(0);
 
-        $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
-        $this->assertFileDoesNotExist(base_path('Modules/Core/resources/views/livewire/pages/about-page.blade.php'));
+        $this->assertFileExists(base_path('Modules/TestCore/app/Livewire/Pages/AboutPage.php'));
+        $this->assertFileDoesNotExist(base_path('Modules/TestCore/resources/views/livewire/pages/⚡about-page.blade.php'));
     }
 
     public function test_can_force_create_component()
@@ -71,14 +73,14 @@ class LivewireMakeCommandTest extends TestCase
         // Create the component first
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'TestCore'
         ])
         ->assertExitCode(0);
 
         // Try to create it again with force
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core',
+            'module' => 'TestCore',
             '--force' => true
         ])
         ->assertExitCode(0);
@@ -89,14 +91,14 @@ class LivewireMakeCommandTest extends TestCase
         // Create the component first
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'TestCore'
         ])
         ->assertExitCode(0);
 
         // Try to create it again without force
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'TestCore'
         ])
         ->assertExitCode(0);
     }
@@ -105,12 +107,12 @@ class LivewireMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core',
+            'module' => 'TestCore',
             '--view' => 'pages/about'
         ])
         ->assertExitCode(0);
 
-        $this->assertFileExists(base_path('Modules/Core/resources/views/livewire/pages/about.blade.php'));
+        $this->assertFileExists(base_path('Modules/TestCore/resources/views/livewire/pages/about.blade.php'));
     }
 
     public function test_can_create_component_with_custom_stub()
@@ -122,7 +124,7 @@ class LivewireMakeCommandTest extends TestCase
 
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core',
+            'module' => 'TestCore',
             '--stub' => 'custom'
         ])
         ->assertExitCode(0);
@@ -135,7 +137,7 @@ class LivewireMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => '123Invalid',
-            'module' => 'Core'
+            'module' => 'TestCore'
         ])
         ->assertExitCode(0);
     }
@@ -144,8 +146,123 @@ class LivewireMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Component',
-            'module' => 'Core'
+            'module' => 'TestCore'
         ])
         ->assertExitCode(0);
+    }
+
+    public function test_can_create_sfc_component()
+    {
+        $this->artisan('module:make-livewire', [
+            'component' => 'Pages/SfcPage',
+            'module' => 'TestCore',
+            '--sfc' => true
+        ])
+        ->assertExitCode(0);
+
+        $this->assertFileExists(base_path('Modules/TestCore/resources/views/livewire/pages/⚡sfc-page.blade.php'));
+        $this->assertFileDoesNotExist(base_path('Modules/TestCore/app/Livewire/Pages/SfcPage.php'));
+    }
+
+
+
+    public function test_can_create_component_with_emoji()
+    {
+        $this->artisan('module:make-livewire', [
+            'component' => 'Pages/⚡create',
+            'module' => 'TestCore'
+        ])
+        ->assertExitCode(0);
+
+        $this->assertFileExists(base_path('Modules/TestCore/app/Livewire/Pages/⚡create.php'));
+        $this->assertFileExists(base_path('Modules/TestCore/resources/views/livewire/pages/⚡create.blade.php'));
+    }
+
+    public function test_component_is_registered_with_correct_alias()
+    {
+        $this->artisan('module:make-livewire', [
+            'component' => 'Pages/RegisterCheck',
+            'module' => 'TestCore',
+            '--sfc' => true
+        ])->assertExitCode(0);
+
+        // Verify file created in nested path (livewire/pages/)
+        // Default default namespace maps 'livewire' -> 'livewire' folder.
+        // So Pages/RegisterCheck -> .../views/livewire/pages/⚡register-check.blade.php
+
+        $expectedPath = base_path('Modules/TestCore/resources/views/livewire/pages/⚡register-check.blade.php');
+        $this->assertFileExists($expectedPath);
+
+        // Manually register namespace since module was created after App boot
+        $nsPath = base_path('Modules/TestCore/resources/views/livewire');
+        
+        $finder = app(\Livewire\Finder\Finder::class);
+        $finder->addNamespace('testcore', $nsPath);
+        
+        $ref = new \ReflectionClass($finder);
+        $prop = $ref->getProperty('viewNamespaces');
+        $prop->setAccessible(true);
+        $namespaces = $prop->getValue($finder);
+        
+        $this->assertArrayHasKey('testcore', $namespaces);
+        $this->assertEquals($nsPath, $namespaces['testcore']);
+    }
+
+    public function test_can_create_component_with_namespace_notation()
+    {
+        $this->artisan('module:make-livewire', [
+            'component' => 'pages::NamespacePage',
+            'module' => 'TestCore',
+            '--sfc' => true
+        ])
+        ->assertExitCode(0);
+
+        // Expected path: nested in 'livewire' folder now 
+        $expectedPath = base_path('Modules/TestCore/resources/views/livewire/pages/⚡namespace-page.blade.php');
+        
+        $this->assertFileExists($expectedPath);
+
+        // Register namespace
+        $nsPath = base_path('Modules/TestCore/resources/views/livewire');
+        $finder = app(\Livewire\Finder\Finder::class);
+        $finder->addNamespace('testcore', $nsPath);
+
+        // Verify Finder State
+        $ref = new \ReflectionClass($finder);
+        $prop = $ref->getProperty('viewNamespaces');
+        $prop->setAccessible(true);
+        $namespaces = $prop->getValue($finder);
+        
+        $this->assertArrayHasKey('testcore', $namespaces);
+        $this->assertEquals($nsPath, $namespaces['testcore']);
+    }
+
+    public function test_can_create_mfc_component()
+    {
+        $this->artisan('module:make-livewire', [
+            'component' => 'Pages/MfcPage',
+            'module' => 'TestCore',
+            '--mfc' => true
+        ])
+        ->assertExitCode(0);
+
+        // Expect directory with emoji: livewire/pages/⚡mfc-page
+        // Expect files without emoji inside
+        
+        $dir = base_path('Modules/TestCore/resources/views/livewire/pages/⚡mfc-page');
+        $this->assertDirectoryExists($dir);
+        
+        $this->assertFileExists($dir . '/mfc-page.php');
+        $this->assertFileExists($dir . '/mfc-page.blade.php');
+
+        // Verify Resolution
+        $nsPath = base_path('Modules/TestCore/resources/views/livewire');
+        $finder = app(\Livewire\Finder\Finder::class);
+        $finder->addNamespace('testcore', $nsPath);
+        
+        // Alias: testcore::pages.mfc-page
+        $resolvedPath = $finder->resolveMultiFileComponentPath('testcore::pages.mfc-page');
+        
+        $this->assertEquals($dir, $resolvedPath, 'Finder failed to resolve MFC component path');
     }
 }

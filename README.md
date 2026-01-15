@@ -16,6 +16,8 @@ Using [Laravel Livewire](https://github.com/livewire/livewire) in [Laravel Modul
 
 ### Installation:
 
+**Supports Livewire 3 & 4**
+
 Install through composer:
 
 ```
@@ -63,6 +65,33 @@ CLASS: Modules/Core/app/Livewire/Pages/AboutPage.php
 VIEW:  Modules/Core/resources/views/livewire/pages/about-page.blade.php
 TAG: <livewire:core::pages.about-page />
 ```
+
+**Single File Component (SFC):**
+
+```
+php artisan module:make-livewire Pages/UserProfile Core --sfc
+```
+
+**Output:**
+Creates `Modules/Core/resources/views/livewire/pages/⚡user-profile.blade.php`.
+
+**Multi-File Component (MFC):**
+
+```
+php artisan module:make-livewire ComplexForm Core --mfc
+```
+
+**Output:**
+Creates `Modules/Core/resources/views/livewire/⚡complex-form/` directory containing `complex-form.php` and `complex-form.blade.php`.
+
+**Namespace Notation:**
+
+```
+php artisan module:make-livewire pages::Dashboard Core --sfc
+```
+
+**Output:**
+Creates `Modules/Core/resources/views/livewire/pages/⚡dashboard.blade.php`.
 
 **Inline Component:**
 
@@ -143,9 +172,21 @@ TAG: <livewire:core::pages.about-page />
 
 **Example:**
 
-```
+```blade
 <livewire:core::pages.about-page />
 ```
+
+### Route Registration:
+
+You can register Livewire components directly in your routes using the module namespace.
+
+```php
+Route::livewire('test/sfc', 'test::integration-sfc');
+Route::livewire('test/mfc', 'test::integration-mfc');
+Route::livewire('test/page', 'test::pages.integration-page');
+```
+
+**Note:** The package automatically registers your module as a Livewire Namespace (e.g., `test::`), allowing native resolution of components including Single File Components (SFC) and Multi-File Components (MFC).
 
 ### Making Form Components:
 
@@ -180,7 +221,6 @@ COMPONENT CREATED  🤙
 
 CLASS: Modules/Core/app/Livewire/Forms/PostForm.php
 ```
-
 
 ### Volt:
 
@@ -222,6 +262,7 @@ php artisan module:make-volt volt.counter Core --view=livewire
 ```
 php artisan module:make-volt volt.counter Core --view=pages
 ```
+
 Note: Only registered view namespace will be support from the "volt_view_namespaces" config. By default registered view namespaces are 'livewire' and 'pages' in the config.
 
 ```
@@ -320,7 +361,6 @@ Remove comment for these lines & add your custom modules.
 > **views_path:** Module resource view path (required).
 >
 > **volt_view_namespaces:** By default using `config('modules-livewire.volt_view_namespaces')` value. You can set a different value for the specific module.
->
 
 ### License
 

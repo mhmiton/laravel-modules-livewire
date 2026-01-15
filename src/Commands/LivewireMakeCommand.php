@@ -11,7 +11,7 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
 {
     use LivewireComponentParser;
 
-    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--stub=}';
+    protected $signature = 'module:make-livewire {component} {module} {--view=} {--force} {--inline} {--sfc} {--mfc} {--class} {--stub=}';
 
     /**
      * The console command description.
@@ -58,6 +58,10 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
 
     protected function createClass()
     {
+        if ($this->isSfc()) {
+            return false;
+        }
+
         $classFile = $this->component->class->file;
 
         if (File::exists($classFile) && ! $this->isForce()) {

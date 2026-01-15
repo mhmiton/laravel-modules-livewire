@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\Livewire;
 use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
+use Mhmiton\LaravelModulesLivewire\Support\ModuleLivewireComponentRegistry;
 use Mhmiton\LaravelModulesLivewire\Support\ModuleVoltComponentRegistry;
 use Mhmiton\LaravelModulesLivewire\View\ModuleVoltViewFactory;
 use ReflectionClass;
@@ -22,11 +23,14 @@ class LivewireComponentServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->registerModuleVoltViewFactory();
+    }
+
+    public function boot()
+    {
         $this->registerModuleComponents();
 
         $this->registerCustomModuleComponents();
-
-        $this->registerModuleVoltViewFactory();
     }
 
     /**
@@ -69,6 +73,14 @@ class LivewireComponentServiceProvider extends ServiceProvider
                     'namespace' => $namespace,
                     'view_namespaces' => config('modules-livewire.volt_view_namespaces', ['livewire', 'pages']),
                 ]);
+
+            (new ModuleLivewireComponentRegistry())
+                ->registerComponents([
+                    'path' => $module->getPath(),
+                    'aliasPrefix' => $module->getLowerName().'::',
+                    'namespace' => $namespace,
+                    'view_namespaces' => config('modules-livewire.view_namespaces', ['livewire', 'pages']),
+                ]);
         });
     }
 
@@ -101,6 +113,14 @@ class LivewireComponentServiceProvider extends ServiceProvider
                     'aliasPrefix' => $lowerName.'::',
                     'namespace' => $namespace,
                     'view_namespaces' => $module['volt_view_namespaces'] ?? ['livewire', 'pages'],
+                ]);
+
+            (new ModuleLivewireComponentRegistry())
+                ->registerComponents([
+                    'path' => $module['path'] ?? null,
+                    'aliasPrefix' => $lowerName.'::',
+                    'namespace' => $namespace,
+                    'view_namespaces' => $module['view_namespaces'] ?? ['livewire', 'pages'],
                 ]);
         });
     }
