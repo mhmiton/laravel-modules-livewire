@@ -44,7 +44,7 @@ trait LivewireComponentParser
         }
 
         $this->directories = collect(
-            preg_split('/[.\/(\\\\)]+/', $componentName)
+            preg_split('/[.\/(\\\\)]+|::/', $componentName)
         )->map([Str::class, 'studly']);
 
         $this->component = $this->getComponent();
@@ -183,6 +183,7 @@ trait LivewireComponentParser
             'folder' => Str::after($moduleLivewireViewDir, 'views/'),
             'file' => $file,
             'name' => strtr($path, ['/' => '.']),
+            'tag' => $this->getComponentTag(),
         ];
     }
 
@@ -285,6 +286,24 @@ trait LivewireComponentParser
 
     protected function getViewName()
     {
+        $prefix = $this->getModuleLowerName().'::';
+        if ($this->viewNamespace) {
+            $prefix .= $this->viewNamespace . '.'; // Internal view name uses dot? Or ::?
+            // View names for loading usually use dot or ::. 
+            // If we use :: in tag, we should match.
+            // But getViewName is used for class->render() view('xxx'). 
+            // View finder works with :: for namespaces.
+            // If viewNamespace is 'pages', it's registered as 'auth::pages'.
+            // So view name inside that namespace is just 'component'.
+            // So 'auth::pages::component'.
+            // But here we return the string.
+            // If we return 'auth::pages.component', it looks in 'auth' NS, 'pages.component' file.
+            // If we return 'auth::pages::component', it looks in 'auth::pages' NS.
+            // So we should return 'auth::pages::component'.
+            
+             return $this->getModuleLowerName().'::' . $this->viewNamespace . '::' . $this->component->view->name;
+        }
+
         return $this->getModuleLowerName().'::'.$this->component->view->folder.'.'.$this->component->view->name;
     }
 
@@ -301,7 +320,9 @@ trait LivewireComponentParser
             ->map([Str::class, 'kebab'])
             ->implode('.');
 
-        $tag = "<livewire:{$this->getModuleLowerName()}::{$directoryAsView} />";
+        $namespacePart = $this->viewNamespace ? $this->viewNamespace . '::' : '';
+        
+        $tag = "<livewire:{$this->getModuleLowerName()}::{$namespacePart}{$directoryAsView} />";
 
         $tagWithOutIndex = Str::replaceLast('.index', '', $tag);
 

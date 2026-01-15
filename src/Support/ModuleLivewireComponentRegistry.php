@@ -30,6 +30,13 @@ class ModuleLivewireComponentRegistry
         
         if (\File::isDirectory($livewireViewPath)) {
             app('livewire.finder')->addNamespace($livewireNamespace, $livewireViewPath);
+
+            // Magic: Register subdirectories as nested namespaces (e.g. auth::pages)
+            foreach (\File::directories($livewireViewPath) as $directory) {
+                $basename = basename($directory);
+                $nestedNamespace = $livewireNamespace . '::' . $basename;
+                app('livewire.finder')->addNamespace($nestedNamespace, $directory);
+            }
         }
     }
     

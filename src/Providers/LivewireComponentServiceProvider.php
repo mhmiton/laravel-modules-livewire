@@ -23,6 +23,12 @@ class LivewireComponentServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app->extend('livewire.finder', function ($original, $app) {
+            $new = new \Mhmiton\LaravelModulesLivewire\Support\Livewire\ModuleLivewireFinder();
+            $new->copyStateFrom($original);
+            return $new;
+        });
+
         $this->registerModuleVoltViewFactory();
     }
 

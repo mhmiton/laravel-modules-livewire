@@ -51,6 +51,10 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
             $view && $this->line("<options=bold;fg=green>VIEW:</>  {$this->getViewSourcePath()}");
 
             $class && $this->line("<options=bold;fg=green>TAG:</> {$class->tag}");
+
+            if (!$class && $view) {
+                $this->line("<options=bold;fg=green>TAG:</> {$view->tag}");
+            }
         }
 
         return false;

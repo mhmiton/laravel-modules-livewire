@@ -265,4 +265,19 @@ class LivewireMakeCommandTest extends TestCase
         
         $this->assertEquals($dir, $resolvedPath, 'Finder failed to resolve MFC component path');
     }
+
+    public function test_can_create_component_with_nested_namespace_syntax_using_colons()
+    {
+        $this->artisan('module:make-livewire', [
+            'component' => 'pages::Deep::Settings::Profile',
+            'module' => 'TestCore',
+            '--sfc' => true
+        ])
+        ->expectsOutputToContain('<livewire:testcore::pages::deep.settings.profile />')
+        ->assertExitCode(0);
+
+        $expectedPath = base_path('Modules/TestCore/resources/views/livewire/pages/deep/settings/⚡profile.blade.php');
+        
+        $this->assertFileExists($expectedPath);
+    }
 }
