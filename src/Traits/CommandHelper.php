@@ -190,11 +190,11 @@ trait CommandHelper
 
     protected function isClassNameValid($name)
     {
-        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand())->isClassNameValid($name);
+        return (bool) preg_match('/^[\p{L}\p{N}\p{M}\p{S}_]+$/u', $name);
     }
 
     protected function isReservedClassName($name)
     {
-        return (new \Livewire\Features\SupportConsoleCommands\Commands\MakeCommand())->isReservedClassName($name);
+        return in_array(strtolower($name), ['parent', 'component', 'self', 'static']);
     }
 }
