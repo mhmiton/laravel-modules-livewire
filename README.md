@@ -1,387 +1,207 @@
-# Laravel Modules With Livewire
+# Laravel Modules + Livewire
 
-Using [Laravel Livewire](https://github.com/livewire/livewire) in [Laravel Modules](https://github.com/nWidart/laravel-modules) package with automatically registered livewire components for every modules.
+Integrating [Laravel Livewire](https://github.com/livewire/livewire) with [Laravel Modules](https://github.com/nWidart/laravel-modules) enables seamless Livewire functionality across all your application modules.
 
 <p align="center">
     <img src="https://dev.mhmiton.com/laravel-modules-livewire-example/public/assets/images/laravel-modules-livewire.png" alt="laravel-modules-livewire">
 </p>
 
-<p align="left">
-    <strong>Example Source Code: </strong><a href="https://github.com/mhmiton/laravel-modules-livewire-example" target="_blank">https://github.com/mhmiton/laravel-modules-livewire-example</a>
-</p>
+### Examples:
+<strong>Live Demo: </strong> <a href="https://dev.mhmiton.com/laravel-modules-livewire-example" target="_blank">https://dev.mhmiton.com/laravel-modules-livewire-example</a> - [Source Code](https://github.com/mhmiton/laravel-modules-livewire-example)
 
-<p align="left">
-    <strong>Example Live Demo: </strong> <a href="https://dev.mhmiton.com/laravel-modules-livewire-example" target="_blank">https://dev.mhmiton.com/laravel-modules-livewire-example</a>
-</p>
-
-### Installation:
-
-Install through composer:
-
+## Installation:
 ```
 composer require mhmiton/laravel-modules-livewire
 ```
 
-Publish the package's configuration file:
+### Configurations
+Publish the package's configuration file using the following command:
 
 ```
 php artisan vendor:publish --tag=modules-livewire:config
 ```
 
-### Creating Single File Components (SFC):
+## Components
 
-**Command Signature:**
+#### Command Signature
+`php artisan module:make-livewire {component} {module} {--sfc|mfc|class} {--options}`
 
-`php artisan module:make-livewire {component} {module} {--sfc} {--force} {--emoji=} {--stub=}`
+#### Options
 
-**Example:**
-
+##### `--force` *(Force create component if the component already exists)*
 ```
-php artisan module:make-livewire sfc.post.create Core --sfc
-```
-
-**Force create component if the component already exists:**
-
-```
-php artisan module:make-livewire sfc.post.create Core --sfc --force
+php artisan module:make-livewire index User --force
 ```
 
-**Output:**
+##### `--emoji` *(Use emoji (⚡) in file/directory names (true or false)*
+```
+php artisan module:make-livewire index User --emoji=false
+```
 
+##### `--test` *(Create component with test file)*
+```
+php artisan module:make-livewire index User --test
+```
+
+##### `--js` *(Create component with js file)*
+```
+php artisan module:make-livewire index User --js
+```
+
+##### `--view` *(Set a custom view path for component)*
+```
+php artisan module:make-livewire Index User --class --view=pages/index
+```
+> Note: Only registered view namespaces will be supported. By default, registered view namespaces are 'livewire' and 'pages' in the config.
+
+##### `--stubs` *(You can set a custom stub directory for a component)*
+```
+php artisan module:make-livewire Index User --stub=modules-livewire/user
+```
+
+### Rendering Components
+`<livewire:{module-lower-name}::component-class-kebab-case />`
+
+#### Example
+```
+<livewire:user::profile />
+```
+
+## Single File Components (SFC)
+```
+php artisan module:make-livewire index User --sfc
+```
+
+#### Output
 ```
 COMPONENT CREATED - SFC  🤙
 
-VIEW:  modules/Core/resources/views/livewire/sfc/post/⚡create.blade.php
-TAG: <livewire:core::sfc.post.create />
+VIEW:  modules/User/resources/views/livewire/⚡index.blade.php
+TAG: <livewire:user::index />
 ```
 
-**Option (--emoji):**
-
-Use emoji (⚡) in file/directory names (true or false)
-
+## Multi-File Components (MFC)
 ```
-php artisan module:make-livewire sfc.post.create Core --sfc --emoji=false
+php artisan module:make-livewire index User --mfc
 ```
 
-**Modifying Stubs:**
-
-Check the [Modifying Stubs](#modifying-stubs) section for the `--stub` option.
-
-### Creating Multi File Components (MFC):
-
-**Command Signature:**
-
-`php artisan module:make-livewire {component} {module} {--mfc} {--force} {--emoji=} {--test} {--js} {--stub=}`
-
-**Example:**
-
-```
-php artisan module:make-livewire mfc.post.create Core --mfc
-```
-
-**Force create component if the component already exists:**
-
-```
-php artisan module:make-livewire mfc.post.create Core --mfc --force
-```
-
-**Output:**
-
+#### Output
 ```
 COMPONENT CREATED - MFC  🤙
 
-CLASS:  modules/Core/resources/views/livewire/mfc/post/⚡create/create.php
-VIEW:  modules/Core/resources/views/livewire/mfc/post/⚡create/create.blade.php
-TAG: <livewire:core::mfc.post.create />
+CLASS:  modules/User/resources/views/livewire/⚡index/index.php
+VIEW:  modules/User/resources/views/livewire/⚡index/index.blade.php
+TAG: <livewire:user::index />
 ```
 
-**Option (--emoji):**
-
-Use emoji (⚡) in file/directory names (true or false)
-
+## Class-based Components
 ```
-php artisan module:make-livewire mfc.post.create Core --mfc --emoji=false
+php artisan module:make-livewire Index User --class
 ```
 
-**Option (--test): Create MFC with test file.:**
-
-```
-php artisan module:make-livewire mfc.post.create Core --mfc --test
-```
-
-**Option (--js): Create MFC with js file:**
-
-```
-php artisan module:make-livewire mfc.post.create Core --mfc --js
-```
-
-**Modifying Stubs:**
-
-Check the [Modifying Stubs](#modifying-stubs) section for the `--stub` option.
-
-### Creating Class-based Components:
-
-**Command Signature:**
-
-`php artisan module:make-livewire {component} {module} {--class} {--view=} {--force} {--inline} {--stub=}`
-
-**Example:**
-
-```
-php artisan module:make-livewire Pages/AboutPage Core --class
-```
-
-```
-php artisan module:make-livewire Pages\\AboutPage Core --class
-```
-
-```
-php artisan module:make-livewire pages.about-page Core --class
-```
-
-**Force create component if the class already exists:**
-
-```
-php artisan module:make-livewire Pages/AboutPage Core --class --force
-```
-
-**Output:**
-
+#### Output
 ```
 COMPONENT CREATED - CLASS BASED  🤙
 
-CLASS: Modules/Core/app/Livewire/Pages/AboutPage.php
-VIEW:  Modules/Core/resources/views/livewire/pages/about-page.blade.php
-TAG: <livewire:core::pages.about-page />
+CLASS: Modules/User/app/Livewire/Index.php
+VIEW:  Modules/User/resources/views/livewire/index.blade.php
+TAG: <livewire:user::index />
 ```
 
-**Inline Component:**
-
+## Inline (Class-based) Component
 ```
-php artisan module:make-livewire Pages/AboutPage Core --class --inline
+php artisan module:make-livewire Index User --class --inline
 ```
 
-**Output:**
-
+#### Output
 ```
 COMPONENT CREATED - CLASS BASED  🤙
 
-CLASS: Modules/Core/app/Livewire/Pages/AboutPage.php
-TAG: <livewire:core::pages.about-page />
+CLASS: Modules/User/app/Livewire/Index.php
+TAG: <livewire:user::index />
 ```
 
-**Extra Option (--view):**
+## Stubs
 
-**You're able to set a custom view path for component with (--view) option.**
-
-**Example:**
-
-```
-php artisan module:make-livewire Pages/AboutPage Core --class --view=pages/about
-```
-
-```
-php artisan module:make-livewire Pages/AboutPage Core --class --view=pages.about
-```
-
-**Output:**
-
-```
-COMPONENT CREATED - CLASS BASED  🤙
-
-CLASS: Modules/Core/app/Livewire/Pages/AboutPage.php
-VIEW:  Modules/Core/resources/views/livewire/pages/about.blade.php
-TAG: <livewire:core::pages.about-page />
-```
-
-### Rendering Components:
-
-`<livewire:{module-lower-name}::component-class-kebab-case />`
-
-**Example:**
-
-```
-<livewire:core::pages.about-page />
-```
-
-### Modifying Stubs:
-
-Publish the package's stubs:
+### Publishing the package's stubs
 
 ```
 php artisan vendor:publish --tag=modules-livewire:stub
 ```
 
-After publishing the stubs, will create these files. And when running the make command, will use these stub files by default.
+After publishing the stubs, these files will be created. And when running the make command, it will use these stub files by default.
+
+#### Single File Component (SFC)
+- stubs/modules-livewire/livewire-sfc.stub
+
+#### Multi-File Component (MFC)
+- stubs/modules-livewire/livewire-mfc-class.stub
+- stubs/modules-livewire/livewire-mfc-view.stub
+- stubs/modules-livewire/livewire-mfc-test.stub
+- stubs/modules-livewire/livewire-mfc-js.stub
+
+#### Class-based Component
+- stubs/modules-livewire/livewire.inline.stub
+- stubs/modules-livewire/livewire.stub
+- stubs/modules-livewire/livewire.view.stub
+
+#### Volt
+- stubs/modules-livewire/volt-component-class.stub
+- stubs/modules-livewire/volt-component.stub
+
+## Form Components:
+
+### Command Signature
+`php artisan module:make-livewire-form {component} {module} {--options}`
+
+### Example
 
 ```
-// For Single File Component (SFC)
-stubs/modules-livewire/livewire-sfc.stub
-
-// For Multi File Component (MFC)
-stubs/modules-livewire/livewire-mfc-class.stub
-stubs/modules-livewire/livewire-mfc-view.stub
-stubs/modules-livewire/livewire-mfc-test.stub
-stubs/modules-livewire/livewire-mfc-js.stub
-
-// For Class-based Component
-stubs/modules-livewire/livewire.inline.stub
-stubs/modules-livewire/livewire.stub
-stubs/modules-livewire/livewire.view.stub
-
-// For Volt
-stubs/modules-livewire/volt-component-class.stub
-stubs/modules-livewire/volt-component.stub
+php artisan module:make-livewire-form Forms/CreateUserForm User
+```
+or
+```
+php artisan module:make-livewire-form forms.create-user-form User
 ```
 
-**You're able to set a custom stub directory for component with (--stub) option.**
-
-```
-php artisan module:make-livewire Pages/AboutPage Core --class --stub=about
-```
-
-```
-php artisan module:make-livewire Pages/AboutPage Core --class --stub=modules-livewire/core
-```
-
-```
-php artisan module:make-livewire Pages/AboutPage Core --class --stub=./
-```
-
-### Creating Form Components:
-
-**Command Signature:**
-
-`php artisan module:make-livewire-form {component} {module} {--force} {--stub=}`
-
-**Example:**
-
-```
-php artisan module:make-livewire-form Forms/PostForm Core
-```
-
-```
-php artisan module:make-livewire-form Forms\\PostForm Core
-```
-
-```
-php artisan module:make-livewire-form forms.post-form Core
-```
-
-**Force create component if the class already exists:**
-
-```
-php artisan module:make-livewire-form Forms/PostForm Core --force
-```
-
-**Output:**
+#### Output
 
 ```
 COMPONENT CREATED  🤙
 
-CLASS: Modules/Core/app/Livewire/Forms/PostForm.php
+CLASS: Modules/User/app/Livewire/Forms/CreateUserForm.php
 ```
 
-### Volt:
+## Volt Components
 
-### Creating Volt Components:
+### Command Signature
+`php artisan module:make-volt {component} {module} {--options}`
 
-**Command Signature:**
-
-`php artisan module:make-volt {component} {module} {--view=} {--class} {--functional} {--force} {--stub=}`
-
-**Example:**
-
+### Example
 ```
-php artisan module:make-volt volt.counter Core
+php artisan module:make-volt counter User
 ```
 
-**Force create component if the view already exists:**
-
-```
-php artisan module:make-volt volt.counter Core --force
-```
-
-**Output:**
-
+#### Output
 ```
 VOLT COMPONENT CREATED  🤙
 
-VIEW:  modules/Core/resources/views/livewire/volt/counter.blade.php
-TAG: <livewire:core::volt.counter />
+VIEW:  modules/User/resources/views/livewire/counter.blade.php
+TAG: <livewire:user::counter />
 ```
 
-**Option (--view):**
-
-**You're able to set a registered view namespace for component with (--view) option.**
-
-```
-php artisan module:make-volt volt.counter Core --view=livewire
-```
-
-```
-php artisan module:make-volt volt.counter Core --view=pages
-```
-Note: Only registered view namespace will be support from the "volt_view_namespaces" config. By default registered view namespaces are 'livewire' and 'pages' in the config.
-
-```
-/*
-|--------------------------------------------------------------------------
-| View namespaces for volt
-|--------------------------------------------------------------------------
-|
-*/
-
-'volt_view_namespaces' => ['livewire', 'pages'],
-```
-
-**Option (--class):**
-
-**You're able to create class based volt component with (--class) option.**
-
-```
-php artisan module:make-volt volt.counter Core --class
-```
-
-**Option (--functional):**
-
-**You're able to create functional (API style) volt component with (--functional) option.**
-
-```
-php artisan module:make-volt volt.counter Core --functional
-```
-
-Note:: By default will be create class based or functional component by registered view namespace's files. If any class based component exists on the view namespace, then will be create class based component.
-
-**Modifying Stubs:**
-
-Check the [Modifying Stubs](#modifying-stubs) section for the `--stub` option.
-
-### Rendering Volt Components:
-
-`<livewire:{module-lower-name}::component-view />`
-
-**Tag:**
-
-```
-<livewire:core::volt.counter />
-```
-
-**Route:**
-
+### Route
 ```
 use Livewire\Volt\Volt;
 
-Volt::route('/volt-counter', 'core::volt.counter');
+Volt::route('/user/counter', 'user::counter');
 ```
 
-### Custom Module:
+## Custom Module
 
-**To create components for the custom module, should be add custom modules in the config file.**
+To create components for the custom module, add custom modules in the `config/modules-livewire.php` config file.
 
-The config file is located at `config/modules-livewire.php` after publishing the config file.
-
-Remove comment for these lines & add your custom modules.
+Remove comments to enable the custom modules.
 
 ```
 /*
@@ -405,25 +225,16 @@ Remove comment for these lines & add your custom modules.
 ],
 ```
 
-**Custom module config details**
+### Configurations
+- name_lower: Module name in lower case (required).
+- path: Module full path (required).
+- module_namespace: Module namespace (required).
+- namespace: By default, using `config('modules-livewire.namespace')` value. You can set a different value for the specific module.
+- view: By default, using `config('modules-livewire.view')` value. You can set a different value for the specific module.
+- views_path: Module resource view path (required).
+- volt_view_namespaces: By default, using `config('modules-livewire.volt_view_namespaces')` value. You can set a different value for the specific module.
 
-> **name_lower:** Module name in lower case (required).
->
-> **path:** Add module full path (required).
->
-> **module_namespace:** Add module namespace (required).
->
-> **namespace:** By default using `config('modules-livewire.namespace')` value. You can set a different value for the specific module.
->
-> **view:** By default using `config('modules-livewire.view')` value. You can set a different value for the specific module.
->
-> **views_path:** Module resource view path (required).
->
-> **volt_view_namespaces:** By default using `config('modules-livewire.volt_view_namespaces')` value. You can set a different value for the specific module.
->
-
-### License
-
+## License
 Copyright (c) 2021 Mehediul Hassan Miton <mhmiton.dev@gmail.com>
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
