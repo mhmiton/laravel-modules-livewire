@@ -3,11 +3,12 @@
 namespace Mhmiton\LaravelModulesLivewire\Tests\Feature;
 
 use Illuminate\Support\Facades\File;
+use Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider;
 use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
 class IntegrationTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -26,7 +27,7 @@ class IntegrationTest extends TestCase
     public function test_package_can_be_installed_and_configured()
     {
         // Test that the service provider can be registered
-        $this->app->register(\Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider::class);
+        $this->app->register(LaravelModulesLivewireServiceProvider::class);
 
         // Test that the config is available
         $config = config('modules-livewire');
@@ -50,9 +51,9 @@ class IntegrationTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/HomePage',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/HomePage.php'));
         $classContent = File::get(base_path('Modules/Core/app/Livewire/Pages/HomePage.php'));
@@ -63,9 +64,9 @@ class IntegrationTest extends TestCase
     {
         $this->artisan('module:make-livewire-form', [
             'component' => 'Forms/ContactForm',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Forms/ContactForm.php'));
         $classContent = File::get(base_path('Modules/Core/app/Livewire/Forms/ContactForm.php'));
@@ -76,9 +77,9 @@ class IntegrationTest extends TestCase
     {
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_inline_component_integration()
@@ -86,9 +87,9 @@ class IntegrationTest extends TestCase
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
             'module' => 'Core',
-            '--inline' => true
+            '--inline' => true,
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
         $this->assertFileDoesNotExist(base_path('Modules/Core/resources/views/livewire/pages/about-page.blade.php'));
@@ -99,9 +100,9 @@ class IntegrationTest extends TestCase
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/ContactPage',
             'module' => 'Core',
-            '--view' => 'pages/contact'
+            '--view' => 'pages/contact',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/resources/views/livewire/pages/contact.blade.php'));
     }
@@ -111,14 +112,14 @@ class IntegrationTest extends TestCase
         // Create custom stub directory
         $stubPath = base_path('stubs/modules-livewire/custom');
         File::makeDirectory($stubPath, 0755, true, true);
-        File::put($stubPath . '/livewire.stub', '<?php namespace {{ namespace }}; class {{ class }} { }');
+        File::put($stubPath.'/livewire.stub', '<?php namespace {{ namespace }}; class {{ class }} { }');
 
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/CustomPage',
             'module' => 'Core',
-            '--stub' => 'custom'
+            '--stub' => 'custom',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Clean up
         File::deleteDirectory($stubPath);
@@ -129,9 +130,9 @@ class IntegrationTest extends TestCase
         // Create the component first
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/TestPage',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Modify the file to test force overwrite
         $filePath = base_path('Modules/Core/app/Livewire/Pages/TestPage.php');
@@ -141,9 +142,9 @@ class IntegrationTest extends TestCase
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/TestPage',
             'module' => 'Core',
-            '--force' => true
+            '--force' => true,
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Check that the file was overwritten
         $content = File::get($filePath);
@@ -154,10 +155,10 @@ class IntegrationTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->expectsOutput('TAG: <livewire:core::pages.about-page />')
-        ->assertExitCode(0);
+            ->expectsOutput('TAG: <livewire:core::pages.about-page />')
+            ->assertExitCode(0);
     }
 
     protected function createTestModule()
@@ -165,25 +166,25 @@ class IntegrationTest extends TestCase
         $modulePath = base_path('Modules/Core');
 
         // Create module directory structure
-        File::makeDirectory($modulePath . '/app/Livewire', 0755, true, true);
-        File::makeDirectory($modulePath . '/resources/views/livewire', 0755, true, true);
+        File::makeDirectory($modulePath.'/app/Livewire', 0755, true, true);
+        File::makeDirectory($modulePath.'/resources/views/livewire', 0755, true, true);
 
         // Create module.json
-        File::put($modulePath . '/module.json', json_encode([
+        File::put($modulePath.'/module.json', json_encode([
             'name' => 'Core',
             'alias' => 'core',
-            'namespace' => 'Modules\\Core'
+            'namespace' => 'Modules\\Core',
         ]));
 
         // Create volt module structure
         $voltModulePath = base_path('modules/Core');
-        File::makeDirectory($voltModulePath . '/resources/views/livewire', 0755, true, true);
-        File::makeDirectory($voltModulePath . '/resources/views/pages', 0755, true, true);
+        File::makeDirectory($voltModulePath.'/resources/views/livewire', 0755, true, true);
+        File::makeDirectory($voltModulePath.'/resources/views/pages', 0755, true, true);
 
-        File::put($voltModulePath . '/module.json', json_encode([
+        File::put($voltModulePath.'/module.json', json_encode([
             'name' => 'Core',
             'alias' => 'core',
-            'namespace' => 'Modules\\Core'
+            'namespace' => 'Modules\\Core',
         ]));
     }
 

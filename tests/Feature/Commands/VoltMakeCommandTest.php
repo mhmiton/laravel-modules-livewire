@@ -7,7 +7,7 @@ use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
 class VoltMakeCommandTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -27,18 +27,18 @@ class VoltMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_volt_component_with_slash_notation()
     {
         $this->artisan('module:make-volt', [
             'component' => 'volt/counter',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_force_create_volt_component()
@@ -46,17 +46,17 @@ class VoltMakeCommandTest extends TestCase
         // Create the component first
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Try to create it again with force
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
             'module' => 'Core',
-            '--force' => true
+            '--force' => true,
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_cannot_create_volt_component_without_force_when_exists()
@@ -64,34 +64,34 @@ class VoltMakeCommandTest extends TestCase
         // Create the component first
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Try to create it again without force
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_volt_component_with_custom_view_namespace()
     {
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_volt_component_with_pages_view_namespace()
     {
         $this->artisan('module:make-volt', [
             'component' => 'pages.home',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_class_based_volt_component()
@@ -99,9 +99,9 @@ class VoltMakeCommandTest extends TestCase
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
             'module' => 'Core',
-            '--class' => true
+            '--class' => true,
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_functional_volt_component()
@@ -109,9 +109,9 @@ class VoltMakeCommandTest extends TestCase
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
             'module' => 'Core',
-            '--functional' => true
+            '--functional' => true,
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_volt_component_with_custom_stub()
@@ -119,14 +119,14 @@ class VoltMakeCommandTest extends TestCase
         // Create custom stub directory
         $stubPath = base_path('stubs/modules-livewire/custom');
         File::makeDirectory($stubPath, 0755, true, true);
-        File::put($stubPath . '/volt-component.stub', '<div>Test Volt Component</div>');
+        File::put($stubPath.'/volt-component.stub', '<div>Test Volt Component</div>');
 
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
             'module' => 'Core',
-            '--stub' => 'custom'
+            '--stub' => 'custom',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Clean up
         File::deleteDirectory($stubPath);
@@ -136,9 +136,9 @@ class VoltMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-volt', [
             'component' => '123Invalid',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     protected function createTestModule()
@@ -146,14 +146,14 @@ class VoltMakeCommandTest extends TestCase
         $modulePath = base_path('modules/Core');
 
         // Create module directory structure
-        File::makeDirectory($modulePath . '/resources/views/livewire', 0755, true, true);
-        File::makeDirectory($modulePath . '/resources/views/pages', 0755, true, true);
+        File::makeDirectory($modulePath.'/resources/views/livewire', 0755, true, true);
+        File::makeDirectory($modulePath.'/resources/views/pages', 0755, true, true);
 
         // Create module.json
-        File::put($modulePath . '/module.json', json_encode([
+        File::put($modulePath.'/module.json', json_encode([
             'name' => 'Core',
             'alias' => 'core',
-            'namespace' => 'Modules\\Core'
+            'namespace' => 'Modules\\Core',
         ]));
     }
 

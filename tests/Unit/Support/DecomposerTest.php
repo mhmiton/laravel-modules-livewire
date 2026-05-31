@@ -2,6 +2,7 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Tests\Unit\Support;
 
+use Illuminate\Support\Collection;
 use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
@@ -11,7 +12,7 @@ class DecomposerTest extends TestCase
     {
         $data = Decomposer::getComposerData();
 
-        $this->assertInstanceOf(\Illuminate\Support\Collection::class, $data);
+        $this->assertInstanceOf(Collection::class, $data);
     }
 
     public function test_get_package_returns_null_for_nonexistent_package()
@@ -45,7 +46,7 @@ class DecomposerTest extends TestCase
         $this->assertIsBool($hasPackages);
     }
 
-            public function test_check_dependencies_returns_error_object_when_packages_missing()
+    public function test_check_dependencies_returns_error_object_when_packages_missing()
     {
         $result = Decomposer::checkDependencies(['nonexistent/package']);
 

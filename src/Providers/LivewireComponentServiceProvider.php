@@ -8,6 +8,7 @@ use Livewire\Livewire;
 use Mhmiton\LaravelModulesLivewire\Support\Decomposer;
 use Mhmiton\LaravelModulesLivewire\Support\ModuleVoltComponentRegistry;
 use Mhmiton\LaravelModulesLivewire\View\ModuleVoltViewFactory;
+use Nwidart\Modules\Facades\Module;
 
 class LivewireComponentServiceProvider extends ServiceProvider
 {
@@ -41,7 +42,7 @@ class LivewireComponentServiceProvider extends ServiceProvider
             return false;
         }
 
-        $modules = \Nwidart\Modules\Facades\Module::toCollection();
+        $modules = Module::toCollection();
 
         $modulesLivewireNamespace = config('modules-livewire.namespace', 'Livewire');
 

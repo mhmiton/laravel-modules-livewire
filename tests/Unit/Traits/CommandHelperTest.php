@@ -2,21 +2,27 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Tests\Unit\Traits;
 
+use Illuminate\Console\Command;
 use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
+use Mhmiton\LaravelModulesLivewire\Traits\CommandHelper;
 
 class CommandHelperTest extends TestCase
 {
     protected $command;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
-        $this->command = new class extends \Illuminate\Console\Command {
-            use \Mhmiton\LaravelModulesLivewire\Traits\CommandHelper;
+        $this->command = new class extends Command
+        {
+            use CommandHelper;
+
             protected $signature = 'test:command {component} {module}';
+
             protected $description = 'Test command';
 
             public $component;
+
             public $module;
 
             public function __construct()
@@ -26,7 +32,10 @@ class CommandHelperTest extends TestCase
                 $this->module = 'Core';
             }
 
-            public function handle() { return 0; }
+            public function handle()
+            {
+                return 0;
+            }
 
             // Mock the input methods
             public function argument($key = null)
@@ -37,6 +46,7 @@ class CommandHelperTest extends TestCase
                 if ($key === 'component') {
                     return 'TestComponent';
                 }
+
                 return null;
             }
 
@@ -48,6 +58,7 @@ class CommandHelperTest extends TestCase
                 if ($key === 'inline') {
                     return false;
                 }
+
                 return null;
             }
         };

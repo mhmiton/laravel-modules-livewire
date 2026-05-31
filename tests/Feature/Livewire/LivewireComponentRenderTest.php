@@ -3,12 +3,11 @@
 namespace Mhmiton\LaravelModulesLivewire\Tests\Feature\Livewire;
 
 use Livewire\Livewire;
-use Mhmiton\LaravelModulesLivewire\Providers\LivewireComponentServiceProvider;
 use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
 class LivewireComponentRenderTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
     }

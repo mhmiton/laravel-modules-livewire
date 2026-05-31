@@ -88,7 +88,7 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
             file_get_contents($this->component->stub->mfc_stubs['class'])
         );
 
-        $this->line("<options=bold;fg=green>CLASS:</>  ".strtr($this->getViewSourcePath(), ['.blade.php' => '.php']));
+        $this->line('<options=bold;fg=green>CLASS:</>  '.strtr($this->getViewSourcePath(), ['.blade.php' => '.php']));
 
         File::put(
             $viewFile,
@@ -111,7 +111,7 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
                 )
             );
 
-            $this->line("<options=bold;fg=green>TEST:</>  ".strtr($this->getViewSourcePath(), ['.blade.php' => '.test.php']));
+            $this->line('<options=bold;fg=green>TEST:</>  '.strtr($this->getViewSourcePath(), ['.blade.php' => '.test.php']));
         }
 
         if ($this->option('js') || config('livewire.make_command.with.js')) {
@@ -120,7 +120,7 @@ class LivewireMakeCommand extends Command implements PromptsForMissingInput
                 file_get_contents($this->component->stub->mfc_stubs['js'])
             );
 
-            $this->line("<options=bold;fg=green>JS:</>  ".strtr($this->getViewSourcePath(), ['.blade.php' => '.js']));
+            $this->line('<options=bold;fg=green>JS:</>  '.strtr($this->getViewSourcePath(), ['.blade.php' => '.js']));
         }
 
         $this->line("<options=bold;fg=green>TAG:</> {$this->component->view->tag}");

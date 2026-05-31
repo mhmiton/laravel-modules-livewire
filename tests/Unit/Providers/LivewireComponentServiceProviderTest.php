@@ -9,7 +9,7 @@ class LivewireComponentServiceProviderTest extends TestCase
 {
     protected $provider;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -54,7 +54,7 @@ class LivewireComponentServiceProviderTest extends TestCase
         $result = $this->invokeMethod($this->provider, 'registerComponentDirectory', [
             '/nonexistent/directory',
             'Test\\Namespace',
-            'test::'
+            'test::',
         ]);
 
         $this->assertFalse($result);

@@ -263,7 +263,7 @@ trait LivewireComponentParser
 
     protected function getComponentQuote()
     {
-        return "The <code>{$this->getComponentTagName()}</code> ".$this->determineComponentType()." component is loaded from the ".($this->isCustomModule() ? 'custom ' : '')."<code>{$this->getModuleName()}</code> module.";
+        return "The <code>{$this->getComponentTagName()}</code> ".$this->determineComponentType().' component is loaded from the '.($this->isCustomModule() ? 'custom ' : '')."<code>{$this->getModuleName()}</code> module.";
     }
 
     protected function getBasePath($path = null)

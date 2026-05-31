@@ -2,6 +2,7 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Tests\Feature;
 
+use Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider;
 use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -12,7 +13,7 @@ class ExampleTest extends TestCase
     public function test_package_can_be_loaded(): void
     {
         // Test that the service provider can be registered
-        $this->app->register(\Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider::class);
+        $this->app->register(LaravelModulesLivewireServiceProvider::class);
 
         // Test that the config is available
         $config = config('modules-livewire');

@@ -10,11 +10,11 @@ class ModuleVoltComponentRegistryTest extends TestCase
 {
     protected $registry;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->registry = new ModuleVoltComponentRegistry();
+        $this->registry = new ModuleVoltComponentRegistry;
     }
 
     public function test_register_components_returns_false_when_volt_not_available()
@@ -54,10 +54,10 @@ class ModuleVoltComponentRegistryTest extends TestCase
     {
         // Create test directory structure
         $testPath = base_path('Modules/Core');
-        $viewPath = $testPath . '/resources/views/livewire/';
+        $viewPath = $testPath.'/resources/views/livewire/';
 
         File::makeDirectory($viewPath, 0755, true, true);
-        File::put($viewPath . 'test-component.blade.php', '<div>Test</div>');
+        File::put($viewPath.'test-component.blade.php', '<div>Test</div>');
 
         $components = $this->registry->getRegisterableComponents(
             $testPath,
@@ -76,10 +76,10 @@ class ModuleVoltComponentRegistryTest extends TestCase
     {
         // Create test directory structure
         $testPath = base_path('Modules/Core');
-        $viewPath = $testPath . '/resources/views/livewire/';
+        $viewPath = $testPath.'/resources/views/livewire/';
 
         File::makeDirectory($viewPath, 0755, true, true);
-        File::put($viewPath . 'test-component.txt', 'Test content');
+        File::put($viewPath.'test-component.txt', 'Test content');
 
         $components = $this->registry->getRegisterableComponents(
             $testPath,
@@ -98,10 +98,10 @@ class ModuleVoltComponentRegistryTest extends TestCase
     {
         // Create test directory structure
         $testPath = base_path('Modules/Core');
-        $viewPath = $testPath . '/resources/views/livewire/';
+        $viewPath = $testPath.'/resources/views/livewire/';
 
         File::makeDirectory($viewPath, 0755, true, true);
-        File::put($viewPath . 'test-component.blade.php', '<div>Test</div>');
+        File::put($viewPath.'test-component.blade.php', '<div>Test</div>');
 
         $components = $this->registry->getRegisterableComponents(
             $testPath,
@@ -125,10 +125,10 @@ class ModuleVoltComponentRegistryTest extends TestCase
     {
         // Create test directory structure
         $testPath = base_path('Modules/Core');
-        $viewPath = $testPath . '/resources/views/livewire/pages/';
+        $viewPath = $testPath.'/resources/views/livewire/pages/';
 
         File::makeDirectory($viewPath, 0755, true, true);
-        File::put($viewPath . 'about-page.blade.php', '<div>About</div>');
+        File::put($viewPath.'about-page.blade.php', '<div>About</div>');
 
         $components = $this->registry->getRegisterableComponents(
             $testPath,

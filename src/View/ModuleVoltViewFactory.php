@@ -2,8 +2,8 @@
 
 namespace Mhmiton\LaravelModulesLivewire\View;
 
-use Illuminate\View\Factory;
 use Illuminate\Support\Str;
+use Illuminate\View\Factory;
 use Mhmiton\LaravelModulesLivewire\Support\ModuleVoltComponentRegistry;
 
 class ModuleVoltViewFactory extends Factory
@@ -27,7 +27,7 @@ class ModuleVoltViewFactory extends Factory
             ->replace(['volt-livewire::'], '')
             ->toString();
 
-        $moduleComponentData = (new ModuleVoltComponentRegistry())->getModuleComponentData($moduleName);
+        $moduleComponentData = (new ModuleVoltComponentRegistry)->getModuleComponentData($moduleName);
 
         $moduleVoltViewNamespaces = data_get($moduleComponentData, 'volt_view_namespaces');
 
