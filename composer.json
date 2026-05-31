@@ -32,7 +32,8 @@
     "require-dev": {
         "mockery/mockery": "^1.6",
         "phpunit/phpunit": "^10.4|^11.5|^12.0",
-        "orchestra/testbench": "^8.21.0|^9.0|^10.0|^11.0"
+        "orchestra/testbench": "^8.21.0|^9.0|^10.0|^11.0",
+        "laravel/pint": "^1.29"
     },
     "extra": {
         "laravel": {
@@ -53,7 +54,8 @@
     },
     "scripts": {
         "test": "composer dump-autoload && phpunit",
-        "test-quick": "phpunit"
+        "test-quick": "phpunit",
+        "lint": "pint"
     },
     "minimum-stability": "dev",
     "prefer-stable": true,

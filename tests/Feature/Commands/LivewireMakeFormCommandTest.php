@@ -7,7 +7,7 @@ use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
 class LivewireMakeFormCommandTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -27,9 +27,9 @@ class LivewireMakeFormCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire-form', [
             'component' => 'Forms/PostForm',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Forms/PostForm.php'));
     }
@@ -38,9 +38,9 @@ class LivewireMakeFormCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire-form', [
             'component' => 'Forms\\PostForm',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Forms/PostForm.php'));
     }
@@ -49,9 +49,9 @@ class LivewireMakeFormCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire-form', [
             'component' => 'forms.post-form',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Forms/PostForm.php'));
     }
@@ -61,17 +61,17 @@ class LivewireMakeFormCommandTest extends TestCase
         // Create the component first
         $this->artisan('module:make-livewire-form', [
             'component' => 'Forms/PostForm',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Try to create it again with force
         $this->artisan('module:make-livewire-form', [
             'component' => 'Forms/PostForm',
             'module' => 'Core',
-            '--force' => true
+            '--force' => true,
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_cannot_create_form_component_without_force_when_exists()
@@ -79,16 +79,16 @@ class LivewireMakeFormCommandTest extends TestCase
         // Create the component first
         $this->artisan('module:make-livewire-form', [
             'component' => 'Forms/PostForm',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Try to create it again without force
         $this->artisan('module:make-livewire-form', [
             'component' => 'Forms/PostForm',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_form_component_with_custom_stub()
@@ -96,14 +96,14 @@ class LivewireMakeFormCommandTest extends TestCase
         // Create custom stub directory
         $stubPath = base_path('stubs/modules-livewire/custom');
         File::makeDirectory($stubPath, 0755, true, true);
-        File::put($stubPath . '/livewire.form.stub', '<?php namespace {{ namespace }}; class {{ class }} { }');
+        File::put($stubPath.'/livewire.form.stub', '<?php namespace {{ namespace }}; class {{ class }} { }');
 
         $this->artisan('module:make-livewire-form', [
             'component' => 'Forms/PostForm',
             'module' => 'Core',
-            '--stub' => 'custom'
+            '--stub' => 'custom',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Clean up
         File::deleteDirectory($stubPath);
@@ -113,18 +113,18 @@ class LivewireMakeFormCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire-form', [
             'component' => '123Invalid',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_validates_reserved_form_class_names()
     {
         $this->artisan('module:make-livewire-form', [
             'component' => 'Component',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     protected function createTestModule()
@@ -132,14 +132,14 @@ class LivewireMakeFormCommandTest extends TestCase
         $modulePath = base_path('Modules/Core');
 
         // Create module directory structure
-        File::makeDirectory($modulePath . '/app/Livewire', 0755, true, true);
-        File::makeDirectory($modulePath . '/resources/views/livewire', 0755, true, true);
+        File::makeDirectory($modulePath.'/app/Livewire', 0755, true, true);
+        File::makeDirectory($modulePath.'/resources/views/livewire', 0755, true, true);
 
         // Create module.json
-        File::put($modulePath . '/module.json', json_encode([
+        File::put($modulePath.'/module.json', json_encode([
             'name' => 'Core',
             'alias' => 'core',
-            'namespace' => 'Modules\\Core'
+            'namespace' => 'Modules\\Core',
         ]));
     }
 

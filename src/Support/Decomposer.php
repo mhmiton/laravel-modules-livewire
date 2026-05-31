@@ -12,7 +12,7 @@ class Decomposer
     public static function getComposerData()
     {
         try {
-            $composer = (new Filesystem())->get(base_path('composer.lock'));
+            $composer = (new Filesystem)->get(base_path('composer.lock'));
 
             return collect(data_get(json_decode($composer, true), 'packages'));
         } catch (\Exception $e) {
@@ -44,7 +44,7 @@ class Decomposer
 
     public static function hasPackages($packageNames = [])
     {
-        $packages = $packageNames ?? (new static())->dependencies;
+        $packages = $packageNames ?? (new static)->dependencies;
 
         foreach ($packages as $v) {
             if (! self::getPackage($v)) {
@@ -58,7 +58,7 @@ class Decomposer
 
     public static function checkDependencies($packageNames = null)
     {
-        $packages = $packageNames ?? (new static())->dependencies;
+        $packages = $packageNames ?? (new static)->dependencies;
 
         $type = 'success';
 

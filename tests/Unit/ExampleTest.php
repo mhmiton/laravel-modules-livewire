@@ -30,7 +30,7 @@ class ExampleTest extends TestCase
      */
     public function test_string_operations(): void
     {
-        $this->assertEquals('Hello World', 'Hello ' . 'World');
+        $this->assertEquals('Hello World', 'Hello '.'World');
         $this->assertEquals(5, strlen('Hello'));
         $this->assertEquals('HELLO', strtoupper('hello'));
     }

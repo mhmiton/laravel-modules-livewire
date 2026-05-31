@@ -6,7 +6,7 @@ use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
 class VoltComponentRenderTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
     }
@@ -15,7 +15,7 @@ class VoltComponentRenderTest extends TestCase
     {
         $this->artisan('module:make-volt', [
             'component' => 'volt.counter',
-            'module' => 'Core'
+            'module' => 'Core',
         ]);
 
         $this->assertTrue(true);

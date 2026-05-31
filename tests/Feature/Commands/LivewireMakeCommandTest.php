@@ -7,7 +7,7 @@ use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
 
 class LivewireMakeCommandTest extends TestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
     }
@@ -23,9 +23,9 @@ class LivewireMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
         $this->assertFileExists(base_path('Modules/Core/resources/views/livewire/pages/about-page.blade.php'));
@@ -35,9 +35,9 @@ class LivewireMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Pages\\AboutPage',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
     }
@@ -46,9 +46,9 @@ class LivewireMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => 'pages.about-page',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
     }
@@ -58,9 +58,9 @@ class LivewireMakeCommandTest extends TestCase
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
             'module' => 'Core',
-            '--inline' => true
+            '--inline' => true,
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/app/Livewire/Pages/AboutPage.php'));
         $this->assertFileDoesNotExist(base_path('Modules/Core/resources/views/livewire/pages/about-page.blade.php'));
@@ -71,17 +71,17 @@ class LivewireMakeCommandTest extends TestCase
         // Create the component first
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Try to create it again with force
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
             'module' => 'Core',
-            '--force' => true
+            '--force' => true,
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_cannot_create_component_without_force_when_exists()
@@ -89,16 +89,16 @@ class LivewireMakeCommandTest extends TestCase
         // Create the component first
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Try to create it again without force
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_can_create_component_with_custom_view_path()
@@ -106,9 +106,9 @@ class LivewireMakeCommandTest extends TestCase
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
             'module' => 'Core',
-            '--view' => 'pages/about'
+            '--view' => 'pages/about',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         $this->assertFileExists(base_path('Modules/Core/resources/views/livewire/pages/about.blade.php'));
     }
@@ -118,14 +118,14 @@ class LivewireMakeCommandTest extends TestCase
         // Create custom stub directory
         $stubPath = base_path('stubs/modules-livewire/custom');
         File::makeDirectory($stubPath, 0755, true, true);
-        File::put($stubPath . '/livewire.stub', '<?php namespace {{ namespace }}; class {{ class }} { }');
+        File::put($stubPath.'/livewire.stub', '<?php namespace {{ namespace }}; class {{ class }} { }');
 
         $this->artisan('module:make-livewire', [
             'component' => 'Pages/AboutPage',
             'module' => 'Core',
-            '--stub' => 'custom'
+            '--stub' => 'custom',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
 
         // Clean up
         File::deleteDirectory($stubPath);
@@ -135,17 +135,17 @@ class LivewireMakeCommandTest extends TestCase
     {
         $this->artisan('module:make-livewire', [
             'component' => '123Invalid',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 
     public function test_validates_reserved_class_names()
     {
         $this->artisan('module:make-livewire', [
             'component' => 'Component',
-            'module' => 'Core'
+            'module' => 'Core',
         ])
-        ->assertExitCode(0);
+            ->assertExitCode(0);
     }
 }

@@ -76,7 +76,7 @@ trait VoltComponentParser
 
     protected function getModuleVoltComponentData()
     {
-        return (new ModuleVoltComponentRegistry())->getModuleComponentData(
+        return (new ModuleVoltComponentRegistry)->getModuleComponentData(
             $this->getModuleLowerName()
         );
     }

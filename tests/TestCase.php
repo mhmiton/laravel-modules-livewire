@@ -4,10 +4,10 @@ namespace Mhmiton\LaravelModulesLivewire\Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\LivewireServiceProvider;
-use Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider;
 use Mhmiton\LaravelModulesLivewire\Commands\LivewireMakeCommand;
 use Mhmiton\LaravelModulesLivewire\Commands\LivewireMakeFormCommand;
 use Mhmiton\LaravelModulesLivewire\Commands\VoltMakeCommand;
+use Mhmiton\LaravelModulesLivewire\LaravelModulesLivewireServiceProvider;
 use Mhmiton\LaravelModulesLivewire\Tests\Traits\InitModule;
 use Nwidart\Modules\LaravelModulesServiceProvider;
 use Orchestra\Testbench\TestCase as TestbenchTestCase;
@@ -23,7 +23,7 @@ class TestCase extends TestbenchTestCase
      */
     protected $enablesPackageDiscoveries = true;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 

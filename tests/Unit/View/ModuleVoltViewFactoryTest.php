@@ -2,14 +2,18 @@
 
 namespace Mhmiton\LaravelModulesLivewire\Tests\Unit\View;
 
-use Mhmiton\LaravelModulesLivewire\View\ModuleVoltViewFactory;
+use Illuminate\View\Engines\EngineResolver;
+use Illuminate\View\Factory;
+use Illuminate\View\FileViewFinder;
+use Illuminate\View\View;
 use Mhmiton\LaravelModulesLivewire\Tests\TestCase;
+use Mhmiton\LaravelModulesLivewire\View\ModuleVoltViewFactory;
 
 class ModuleVoltViewFactoryTest extends TestCase
 {
     protected $factory;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -27,21 +31,21 @@ class ModuleVoltViewFactoryTest extends TestCase
 
     public function test_factory_extends_view_factory()
     {
-        $this->assertInstanceOf(\Illuminate\View\Factory::class, $this->factory);
+        $this->assertInstanceOf(Factory::class, $this->factory);
     }
 
     public function test_factory_has_finder()
     {
         $finder = $this->factory->getFinder();
 
-        $this->assertInstanceOf(\Illuminate\View\FileViewFinder::class, $finder);
+        $this->assertInstanceOf(FileViewFinder::class, $finder);
     }
 
     public function test_factory_has_engine_resolver()
     {
         $resolver = $this->factory->getEngineResolver();
 
-        $this->assertInstanceOf(\Illuminate\View\Engines\EngineResolver::class, $resolver);
+        $this->assertInstanceOf(EngineResolver::class, $resolver);
     }
 
     public function test_factory_can_add_namespace()
@@ -64,7 +68,7 @@ class ModuleVoltViewFactoryTest extends TestCase
         $viewPath = base_path('resources/views/test-view.blade.php');
         $viewDir = dirname($viewPath);
 
-        if (!is_dir($viewDir)) {
+        if (! is_dir($viewDir)) {
             mkdir($viewDir, 0755, true);
         }
 
@@ -72,7 +76,7 @@ class ModuleVoltViewFactoryTest extends TestCase
 
         try {
             $view = $this->factory->make('test-view');
-            $this->assertInstanceOf(\Illuminate\View\View::class, $view);
+            $this->assertInstanceOf(View::class, $view);
         } catch (\Exception $e) {
             // View might not be found, which is expected in test environment
             $this->assertTrue(true);

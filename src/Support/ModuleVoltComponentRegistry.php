@@ -4,12 +4,14 @@ namespace Mhmiton\LaravelModulesLivewire\Support;
 
 use Illuminate\Support\Str;
 use Livewire\Livewire;
+use Livewire\Volt\ComponentFactory;
+use Livewire\Volt\Volt;
 
 class ModuleVoltComponentRegistry
 {
     public function registerComponents($options = [])
     {
-        if (! class_exists(\Livewire\Volt\Volt::class)) {
+        if (! class_exists(Volt::class)) {
             return false;
         }
 
@@ -50,13 +52,13 @@ class ModuleVoltComponentRegistry
 
                 return $registerableComponent;
             })
-                ->filter()
-                ->values()
-                ->all();
+            ->filter()
+            ->values()
+            ->all();
 
         return [
             'registerableComponents' => $registerableComponents,
-            'registeredComponents' => $registeredComponents
+            'registeredComponents' => $registeredComponents,
         ];
     }
 
@@ -75,7 +77,7 @@ class ModuleVoltComponentRegistry
                 }
 
                 $fileToComponents = collect(\File::allFiles($fullViewPath))
-                    ->filter(fn($file) => str_ends_with($file->getFilename(), '.blade.php'))
+                    ->filter(fn ($file) => str_ends_with($file->getFilename(), '.blade.php'))
                     ->map(function ($file) use ($aliasPrefix, $viewPath) {
                         $view = (string) Str::of($file->getPathname())
                             ->afterLast($viewPath)
@@ -152,12 +154,12 @@ class ModuleVoltComponentRegistry
             ->map(fn ($viewNamespace) => data_get($moduleComponentData, 'view_path_full').'/'.$viewNamespace)
             ->all();
 
-        \Livewire\Volt\Volt::mount($mountPaths);
+        Volt::mount($mountPaths);
     }
 
     public function component($alias, $path)
     {
-        $componentClass = app(\Livewire\Volt\ComponentFactory::class)->make($alias, $path);
+        $componentClass = app(ComponentFactory::class)->make($alias, $path);
 
         Livewire::component($alias, $componentClass);
     }
@@ -190,7 +192,7 @@ class ModuleVoltComponentRegistry
             $moduleVoltView = "{$moduleName}::{$moduleVoltViewNamespace}.{$componentWithoutAlias}";
 
             if (view()->exists($moduleVoltView)) {
-                return app(\Livewire\Volt\ComponentFactory::class)
+                return app(ComponentFactory::class)
                     ->make($component, view()->getFinder()->find($moduleVoltView));
             }
         }
